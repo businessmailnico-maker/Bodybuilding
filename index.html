@@ -38,14 +38,21 @@
         .modal { background: var(--card-bg); width: 85%; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-height: 85vh; overflow-y: auto; }
         .modal h2 { margin-top: 0; font-size: 20px; margin-bottom: 20px; text-align: center; }
         
-        /* Options-Karten im Modal */
+        /* Options-Karten */
         .option-card { background: var(--bg-color); border-radius: 14px; padding: 16px; margin-bottom: 16px; text-align: left; }
         .option-card h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--text-main); }
-        .option-items { font-size: 15px; font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+        .option-items { font-size: 15px; font-weight: 600; margin-bottom: 10px; line-height: 1.5; color: var(--text-main); }
         .option-macros { font-size: 12px; color: var(--text-muted); font-weight: 500; display: flex; justify-content: space-between; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid #E5E5EA; }
         .btn-eat-option { background-color: var(--accent); color: white; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; }
 
-        /* Slider Styling */
+        /* Edit View Styling */
+        #edit-meal-macros { background: var(--bg-color); padding: 14px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-size: 14px; font-weight: 500; line-height: 1.6; }
+        .edit-input-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #E5E5EA; }
+        .edit-input-group label { font-size: 15px; font-weight: 600; }
+        .edit-input-wrapper { display: flex; align-items: center; }
+        .edit-input-wrapper input { width: 70px; padding: 8px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--accent); margin-right: 8px; }
+
+        /* Slider Styling für Settings */
         .input-group { margin-bottom: 20px; }
         .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .input-header label { font-size: 15px; font-weight: 500; margin: 0; }
@@ -55,13 +62,11 @@
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; margin-top: -10px; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #E5E5EA; border-radius: 2px; }
-        
         #slider-goal-pro::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--protein) 0%, #E5E5EA 100%); }
         #slider-goal-carb::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--carbs) 0%, #E5E5EA 100%); }
         #slider-goal-fat::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--fats) 0%, #E5E5EA 100%); }
 
         #macro-check { font-size: 14px; text-align: center; margin-bottom: 24px; padding: 12px; border-radius: 8px; background-color: var(--bg-color); color: var(--electro); font-weight: 600; }
-
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; }
 
@@ -107,22 +112,29 @@
         </div>
     </div>
 
-    <button class="btn-add" onclick="openMealBrain()">+ Mahlzeit berechnen</button>
+    <button class="btn-add" onclick="openMealBrain()">+ Mahlzeit hinzufügen</button>
 
     <h2 style="font-size: 20px; margin-bottom: 12px;">Gegessen</h2>
     <div id="history-list"></div>
 
-    <!-- Meal Brain Modal -->
+    <!-- Vorschläge Modal -->
     <div class="modal-overlay" id="mealModal">
         <div class="modal">
-            <h2>Deine Optionen</h2>
-            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Praktisch gerundet auf deine restlichen Makros:</p>
-            
-            <div id="options-container">
-                <!-- Wird per JS befüllt -->
-            </div>
-
+            <h2>Vorschläge</h2>
+            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Auf ~700 kcal für dich skaliert:</p>
+            <div id="options-container"></div>
             <button class="btn-cancel" style="margin-top: 10px;" onclick="closeModal('mealModal')">Abbrechen</button>
+        </div>
+    </div>
+
+    <!-- Edit View Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <h2 id="edit-meal-title">Mahlzeit anpassen</h2>
+            <div id="edit-meal-macros"></div>
+            <div id="edit-meal-inputs"></div>
+            <button class="btn-save" onclick="saveEditedMeal()">Speichern & Essen</button>
+            <button class="btn-cancel" onclick="backToBrain()">Zurück</button>
         </div>
     </div>
 
@@ -158,9 +170,10 @@
     <script>
         const defaultGoals = { kcal: 2800, pro: 180, carb: 350, fat: 80 };
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0 };
-        let generatedOptions = []; // Speichert die aktuellen Vorschläge
+        let generatedOptions = []; 
+        let currentEditMeal = null; // Speichert die Daten des Modals, das gerade bearbeitet wird
 
-        // Die vollständige Datenbank inkl. TK Gemüse
+        // Datenbank 
         const db = {
             skyr: { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65 },
             putenhack: { n: "Putenhack", p: 0.20, c: 0.00, f: 0.05, k: 1.25 },
@@ -171,7 +184,7 @@
             kartoffeln: { n: "Kartoffeln (roh)", p: 0.02, c: 0.15, f: 0.001, k: 0.70 },
             haferflocken: { n: "Haferflocken", p: 0.135, c: 0.59, f: 0.07, k: 3.70 },
             maiswaffeln: { n: "Maiswaffeln", p: 0.08, c: 0.80, f: 0.01, k: 3.61 },
-            tk_gemuese: { n: "TK Gemüse", p: 0.025, c: 0.04, f: 0.005, k: 0.30 }, // Neu
+            tk_gemuese: { n: "TK Gemüse", p: 0.025, c: 0.04, f: 0.005, k: 0.30 },
             butter: { n: "Butter", p: 0.01, c: 0.01, f: 0.82, k: 7.40 },
             olivenoel: { n: "Olivenöl", p: 0.00, c: 0.00, f: 1.00, k: 9.00 },
             chiasamen: { n: "Chiasamen", p: 0.17, c: 0.05, f: 0.31, k: 4.86 }
@@ -269,111 +282,176 @@
             let remCarb = Math.max(0, goals.carb - currentEaten.carb);
             let remFat = Math.max(0, goals.fat - currentEaten.fat);
 
+            let remKcal = (remPro * 4) + (remCarb * 4) + (remFat * 9);
+            
+            // SKALIERUNG: Mahlzeiten auf max. 750 kcal normieren
+            let targetKcal = Math.min(remKcal, 750); 
+            let factor = remKcal > 0 ? targetKcal / remKcal : 0;
+
+            let mealPro = remPro * factor;
+            let mealCarb = remCarb * factor;
+            let mealFat = remFat * factor;
+
             const container = document.getElementById('options-container');
             generatedOptions = [];
 
-            if (remPro === 0 && remCarb === 0 && remFat === 0) {
+            if (remKcal === 0) {
                 container.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px; text-align: center; padding: 20px;">Alle Makros erfüllt! 💪</div>`;
                 return;
             }
 
             // OPTION 1: Herzhaft (Putenhack, Reis, TK Gemüse, Olivenöl)
-            let o1_g_gemuese = (remCarb > 15 && remPro > 10) ? 150 : 0; // Fixe 150g Gemüse, wenn Platz ist
-            let o1_c_left = Math.max(0, remCarb - (o1_g_gemuese * db.tk_gemuese.c));
-            let o1_g_reis = round(o1_c_left / db.reis.c, 5); // 5g Schritte für Reis
+            let o1_g_gemuese = (mealCarb > 10 && mealPro > 5) ? 150 : 0; 
+            let o1_c_left = Math.max(0, mealCarb - (o1_g_gemuese * db.tk_gemuese.c));
+            let o1_g_reis = round(o1_c_left / db.reis.c, 5); 
             
-            let o1_p_left = Math.max(0, remPro - (o1_g_gemuese * db.tk_gemuese.p) - (o1_g_reis * db.reis.p));
-            let o1_g_pute = round(o1_p_left / db.putenhack.p, 10); // 10g Schritte für Fleisch
+            let o1_p_left = Math.max(0, mealPro - (o1_g_gemuese * db.tk_gemuese.p) - (o1_g_reis * db.reis.p));
+            let o1_g_pute = round(o1_p_left / db.putenhack.p, 10); 
             
-            let o1_f_left = Math.max(0, remFat - (o1_g_gemuese * db.tk_gemuese.f) - (o1_g_reis * db.reis.f) - (o1_g_pute * db.putenhack.f));
-            let o1_g_oil = round(o1_f_left / db.olivenoel.f, 5); // 5g Schritte für Öl
-
-            // Realistische Summen für Option 1 berechnen
-            let o1_pro = Math.round((o1_g_gemuese * db.tk_gemuese.p) + (o1_g_reis * db.reis.p) + (o1_g_pute * db.putenhack.p) + (o1_g_oil * db.olivenoel.p));
-            let o1_carb = Math.round((o1_g_gemuese * db.tk_gemuese.c) + (o1_g_reis * db.reis.c) + (o1_g_pute * db.putenhack.c) + (o1_g_oil * db.olivenoel.c));
-            let o1_fat = Math.round((o1_g_gemuese * db.tk_gemuese.f) + (o1_g_reis * db.reis.f) + (o1_g_pute * db.putenhack.f) + (o1_g_oil * db.olivenoel.f));
-            let o1_kcal = Math.round((o1_g_gemuese * db.tk_gemuese.k) + (o1_g_reis * db.reis.k) + (o1_g_pute * db.putenhack.k) + (o1_g_oil * db.olivenoel.k));
+            let o1_f_left = Math.max(0, mealFat - (o1_g_gemuese * db.tk_gemuese.f) - (o1_g_reis * db.reis.f) - (o1_g_pute * db.putenhack.f));
+            let o1_g_oil = round(o1_f_left / db.olivenoel.f, 5); 
 
             let o1_items = [];
-            if(o1_g_pute > 0) o1_items.push(`${o1_g_pute}g Putenhack`);
-            if(o1_g_reis > 0) o1_items.push(`${o1_g_reis}g Reis`);
-            if(o1_g_gemuese > 0) o1_items.push(`${o1_g_gemuese}g TK Gemüse`);
-            if(o1_g_oil > 0) o1_items.push(`${o1_g_oil}g Olivenöl`);
+            if(o1_g_pute > 0) o1_items.push({ id: 'putenhack', name: db.putenhack.n, grams: o1_g_pute });
+            if(o1_g_reis > 0) o1_items.push({ id: 'reis', name: db.reis.n, grams: o1_g_reis });
+            if(o1_g_gemuese > 0) o1_items.push({ id: 'tk_gemuese', name: db.tk_gemuese.n, grams: o1_g_gemuese });
+            if(o1_g_oil > 0) o1_items.push({ id: 'olivenoel', name: db.olivenoel.n, grams: o1_g_oil });
 
             if(o1_items.length > 0) {
-                generatedOptions.push({
-                    title: "Herzhaftes Menü",
-                    name: o1_items.join(" + "),
-                    pro: o1_pro, carb: o1_carb, fat: o1_fat, kcal: o1_kcal
-                });
+                generatedOptions.push({ title: "Herzhaftes Menü", items: o1_items });
             }
 
             // OPTION 2: Süß (Skyr, Haferflocken, Chiasamen)
-            let o2_g_chia = round(Math.min(30, remFat / db.chiasamen.f), 5); // Max 30g Chia
-            let o2_c_left = Math.max(0, remCarb - (o2_g_chia * db.chiasamen.c));
-            let o2_g_oats = round(o2_c_left / db.haferflocken.c, 5); // 5g Schritte
+            let o2_g_chia = round(Math.min(25, mealFat / db.chiasamen.f), 5); 
+            let o2_c_left = Math.max(0, mealCarb - (o2_g_chia * db.chiasamen.c));
+            let o2_g_oats = round(o2_c_left / db.haferflocken.c, 5); 
             
-            let o2_p_left = Math.max(0, remPro - (o2_g_chia * db.chiasamen.p) - (o2_g_oats * db.haferflocken.p));
-            let o2_g_skyr = round(o2_p_left / db.skyr.p, 10); // 10g Schritte
-
-            let o2_pro = Math.round((o2_g_chia * db.chiasamen.p) + (o2_g_oats * db.haferflocken.p) + (o2_g_skyr * db.skyr.p));
-            let o2_carb = Math.round((o2_g_chia * db.chiasamen.c) + (o2_g_oats * db.haferflocken.c) + (o2_g_skyr * db.skyr.c));
-            let o2_fat = Math.round((o2_g_chia * db.chiasamen.f) + (o2_g_oats * db.haferflocken.f) + (o2_g_skyr * db.skyr.f));
-            let o2_kcal = Math.round((o2_g_chia * db.chiasamen.k) + (o2_g_oats * db.haferflocken.k) + (o2_g_skyr * db.skyr.k));
+            let o2_p_left = Math.max(0, mealPro - (o2_g_chia * db.chiasamen.p) - (o2_g_oats * db.haferflocken.p));
+            let o2_g_skyr = round(o2_p_left / db.skyr.p, 10); 
 
             let o2_items = [];
-            if(o2_g_skyr > 0) o2_items.push(`${o2_g_skyr}g Skyr`);
-            if(o2_g_oats > 0) o2_items.push(`${o2_g_oats}g Haferflocken`);
-            if(o2_g_chia > 0) o2_items.push(`${o2_g_chia}g Chiasamen`);
+            if(o2_g_skyr > 0) o2_items.push({ id: 'skyr', name: db.skyr.n, grams: o2_g_skyr });
+            if(o2_g_oats > 0) o2_items.push({ id: 'haferflocken', name: db.haferflocken.n, grams: o2_g_oats });
+            if(o2_g_chia > 0) o2_items.push({ id: 'chiasamen', name: db.chiasamen.n, grams: o2_g_chia });
 
             if(o2_items.length > 0) {
-                generatedOptions.push({
-                    title: "Süßes Menü",
-                    name: o2_items.join(" + "),
-                    pro: o2_pro, carb: o2_carb, fat: o2_fat, kcal: o2_kcal
-                });
+                generatedOptions.push({ title: "Süßes Menü", items: o2_items });
             }
 
             // HTML Rendern
             if (generatedOptions.length === 0) {
-                container.innerHTML = `<div style="color: var(--warning); text-align: center;">Du brauchst heute kaum noch etwas, berechne manuell.</div>`;
+                container.innerHTML = `<div style="color: var(--warning); text-align: center;">Du brauchst heute kaum noch etwas.</div>`;
             } else {
-                container.innerHTML = generatedOptions.map((opt, index) => `
+                container.innerHTML = generatedOptions.map((opt, index) => {
+                    // Vorab-Berechnung für die Vorschau
+                    let previewPro = 0, previewCarb = 0, previewFat = 0, previewKcal = 0;
+                    let textString = opt.items.map(i => `${i.grams}g ${i.name}`).join(' + ');
+                    
+                    opt.items.forEach(i => {
+                        previewPro += i.grams * db[i.id].p;
+                        previewCarb += i.grams * db[i.id].c;
+                        previewFat += i.grams * db[i.id].f;
+                        previewKcal += i.grams * db[i.id].k;
+                    });
+
+                    return `
                     <div class="option-card">
                         <h3>${opt.title}</h3>
-                        <div class="option-items">${opt.name.replace(/\+/g, '<br>+ ')}</div>
+                        <div class="option-items">${textString.replace(/\+/g, '<br>+ ')}</div>
                         <div class="option-macros">
-                            <span>🔥 ${opt.kcal} kcal</span>
-                            <span style="color: var(--protein)">🥩 ${opt.pro}g</span>
-                            <span style="color: var(--carbs)">🍚 ${opt.carb}g</span>
-                            <span style="color: var(--fats)">🥑 ${opt.fat}g</span>
+                            <span>🔥 ${Math.round(previewKcal)} kcal</span>
+                            <span style="color: var(--protein)">🥩 ${Math.round(previewPro)}g</span>
+                            <span style="color: var(--carbs)">🍚 ${Math.round(previewCarb)}g</span>
+                            <span style="color: var(--fats)">🥑 ${Math.round(previewFat)}g</span>
                         </div>
-                        <button class="btn-eat-option" onclick="eatOption(${index})">Das esse ich!</button>
-                    </div>
-                `).join('');
+                        <button class="btn-eat-option" onclick="openEditMeal(${index})">Anpassen & Essen</button>
+                    </div>`;
+                }).join('');
             }
         }
 
-        function eatOption(index) {
-            const opt = generatedOptions[index];
+        function openEditMeal(index) {
+            closeModal('mealModal'); 
+            currentEditMeal = JSON.parse(JSON.stringify(generatedOptions[index])); // Deep copy
             
-            localStorage.setItem('eaten_kcal', currentEaten.kcal + opt.kcal);
-            localStorage.setItem('eaten_pro', currentEaten.pro + opt.pro);
-            localStorage.setItem('eaten_carb', currentEaten.carb + opt.carb);
-            localStorage.setItem('eaten_fat', currentEaten.fat + opt.fat);
+            document.getElementById('edit-meal-title').innerText = currentEditMeal.title;
+            let inputsHtml = '';
+            
+            currentEditMeal.items.forEach((item, i) => {
+                inputsHtml += `
+                    <div class="edit-input-group">
+                        <label>${item.name}</label>
+                        <div class="edit-input-wrapper">
+                            <input type="number" value="${item.grams}" oninput="updateEditItem(${i}, this.value)">
+                            <span style="color: var(--text-muted); font-size:15px;">g</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('edit-meal-inputs').innerHTML = inputsHtml;
+            updateEditMacros(); // Initiale Berechnung für Live-Ansicht
+
+            document.getElementById('editModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('editModal').style.opacity = '1', 10);
+        }
+
+        function updateEditItem(index, value) {
+            currentEditMeal.items[index].grams = parseInt(value) || 0;
+            updateEditMacros();
+        }
+
+        function updateEditMacros() {
+            let totalPro = 0, totalCarb = 0, totalFat = 0, totalKcal = 0;
+            currentEditMeal.items.forEach(item => {
+                let food = db[item.id];
+                totalPro += item.grams * food.p;
+                totalCarb += item.grams * food.c;
+                totalFat += item.grams * food.f;
+                totalKcal += item.grams * food.k;
+            });
+            
+            currentEditMeal.pro = Math.round(totalPro);
+            currentEditMeal.carb = Math.round(totalCarb);
+            currentEditMeal.fat = Math.round(totalFat);
+            currentEditMeal.kcal = Math.round(totalKcal);
+
+            document.getElementById('edit-meal-macros').innerHTML = `
+                🔥 <b>${currentEditMeal.kcal} kcal</b> <br>
+                <span style="color: var(--protein)">🥩 ${currentEditMeal.pro}g</span> &nbsp;|&nbsp;
+                <span style="color: var(--carbs)">🍚 ${currentEditMeal.carb}g</span> &nbsp;|&nbsp;
+                <span style="color: var(--fats)">🥑 ${currentEditMeal.fat}g</span>
+            `;
+        }
+
+        function saveEditedMeal() {
+            // Filtere Lebensmittel heraus, die auf 0g gesetzt wurden
+            let validItems = currentEditMeal.items.filter(i => i.grams > 0);
+            if(validItems.length === 0) {
+                closeModal('editModal');
+                return;
+            }
+            
+            let nameString = validItems.map(i => `${i.grams}g ${i.name}`).join(" + ");
+            let finalName = currentEditMeal.title + ": " + nameString;
+
+            localStorage.setItem('eaten_kcal', currentEaten.kcal + currentEditMeal.kcal);
+            localStorage.setItem('eaten_pro', currentEaten.pro + currentEditMeal.pro);
+            localStorage.setItem('eaten_carb', currentEaten.carb + currentEditMeal.carb);
+            localStorage.setItem('eaten_fat', currentEaten.fat + currentEditMeal.fat);
             
             let history = JSON.parse(localStorage.getItem('food_history')) || [];
             history.push({
-                name: opt.title + ": " + opt.name,
-                kcal: opt.kcal,
-                pro: opt.pro,
-                carb: opt.carb,
-                fat: opt.fat
+                name: finalName,
+                kcal: currentEditMeal.kcal,
+                pro: currentEditMeal.pro,
+                carb: currentEditMeal.carb,
+                fat: currentEditMeal.fat
             });
             localStorage.setItem('food_history', JSON.stringify(history));
 
             loadData();
-            closeModal('mealModal');
+            closeModal('editModal');
         }
 
         function resetDay() {
@@ -384,6 +462,11 @@
             localStorage.removeItem('food_history');
             loadData();
             closeModal('settingsModal');
+        }
+
+        function backToBrain() {
+            closeModal('editModal');
+            setTimeout(openMealBrain, 200);
         }
 
         function openSettings() { 
