@@ -14,6 +14,7 @@
             --protein: #FF2D55; 
             --carbs: #FF9500; 
             --fats: #FFCC00; 
+            --water: #32ADE6;
             --electro: #34C759; 
             --danger: #FF3B30;
         }
@@ -21,23 +22,32 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 40px; -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none; }
         
         /* Kalender Header */
-        .date-switcher { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 0 10px; }
+        .date-switcher { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 0 10px; position: relative; }
         .date-btn { font-size: 28px; background: none; border: none; color: var(--accent); cursor: pointer; padding: 10px; line-height: 1; }
-        .date-display { font-size: 17px; font-weight: 600; color: var(--text-main); }
+        .date-display-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
+        .date-display { font-size: 17px; font-weight: 600; color: var(--text-main); text-align: center; }
+        #native-date-picker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 20px; }
         h1 { font-size: 34px; font-weight: 700; margin: 0; }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
         .btn-settings { color: var(--accent); font-size: 16px; font-weight: 600; background: none; border: none; cursor: pointer; padding: 0; }
+        .btn-gear { font-size: 24px; background: none; border: none; cursor: pointer; padding: 0; color: var(--text-muted); }
         
         .card { background-color: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .macro-box { background-color: var(--card-bg); border-radius: 14px; padding: 16px 12px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; }
         .macro-title { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; text-transform: uppercase; }
         .macro-value { font-size: 22px; font-weight: 700; }
-        .val-protein { color: var(--protein); } .val-carbs { color: var(--carbs); } .val-fats { color: var(--fats); } .val-electro { color: var(--electro); }
+        .val-protein { color: var(--protein); } .val-carbs { color: var(--carbs); } .val-fats { color: var(--fats); } 
+        
         .progress-bar-bg { background-color: var(--bg-color); height: 8px; border-radius: 4px; width: 100%; margin-top: 8px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
         
+        /* Water Tracker */
+        .btn-water { background: var(--bg-color); color: var(--water); font-size: 15px; font-weight: 600; border: none; border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+        .btn-water:active { opacity: 0.7; }
+
         .btn-add { background-color: var(--accent); color: white; font-size: 17px; font-weight: 600; width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer; margin-top: 10px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); }
         .btn-add-ingredient { background: none; color: var(--accent); font-size: 16px; font-weight: 600; width: 100%; padding: 12px; border: 2px dashed var(--accent); border-radius: 12px; margin-top: 10px; cursor: pointer; }
         
@@ -54,7 +64,6 @@
         .preview-box { background: var(--card-bg); border-radius: 10px; padding: 10px; margin-bottom: 12px; }
         .preview-title { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
         
-        /* Edit View Styling */
         #edit-meal-macros { background: var(--bg-color); padding: 14px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-size: 14px; font-weight: 500; line-height: 1.6; }
         .edit-input-group { display: flex; flex-direction: column; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #E5E5EA; }
         .edit-swap-select { border: 1px solid #E5E5EA; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--bg-color); color: var(--accent); padding: 8px; width: 100%; text-overflow: ellipsis; appearance: none; -webkit-appearance: none; cursor: pointer; margin-bottom: 8px; }
@@ -91,13 +100,19 @@
 
     <div class="date-switcher">
         <button class="date-btn" onclick="changeDate(-1)">&lsaquo;</button>
-        <div class="date-display" id="display-date">Lade Datum...</div>
+        <div class="date-display-wrapper">
+            <div class="date-display" id="display-date">Lade Datum...</div>
+            <input type="date" id="native-date-picker" onchange="jumpToDate(this.value)">
+        </div>
         <button class="date-btn" onclick="changeDate(1)">&rsaquo;</button>
     </div>
 
     <div class="header">
-        <h1 id="header-title">Heute</h1>
-        <button class="btn-settings" onclick="openSettings()">Ziele anpassen</button>
+        <h1 id="header-title">Übersicht</h1>
+        <div class="header-actions">
+            <button class="btn-settings" onclick="openSettings()">Ziele</button>
+            <button class="btn-gear" onclick="openEmojiSettings()">⚙️</button>
+        </div>
     </div>
 
     <div class="card">
@@ -125,6 +140,20 @@
             <div class="progress-bar-bg"><div id="bar-fat" class="progress-fill" style="background-color: var(--fats);"></div></div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">von <span id="display-fat-goal">0</span>g</div>
         </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin:0; font-size: 15px; color: var(--text-muted); text-transform: uppercase;">Wasser 💧</h2>
+                <div style="font-size: 28px; font-weight: 700; margin: 4px 0;"><span id="display-water">0</span> <span style="font-size: 16px; color: var(--text-muted);">/ 3000 ml</span></div>
+            </div>
+            <div style="display:flex; gap: 8px;">
+                <button class="btn-water" onclick="addWater(250)">+ 250</button>
+                <button class="btn-water" onclick="addWater(500)">+ 500</button>
+            </div>
+        </div>
+        <div class="progress-bar-bg" style="margin-top: 12px;"><div id="bar-water" class="progress-fill" style="background-color: var(--water); width: 0%;"></div></div>
     </div>
 
     <button class="btn-add" onclick="openMealBrain()">+ Mahlzeit hinzufügen</button>
@@ -155,9 +184,44 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="emojiModal">
+        <div class="modal">
+            <h2>App Einstellungen</h2>
+            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px; margin-bottom: 20px;">Passe deine Anzeige-Emojis an.</p>
+            
+            <div class="edit-input-group" style="padding-bottom: 8px;">
+                <label style="font-size: 14px; color: var(--text-muted); margin-bottom: 6px;">Protein Icon</label>
+                <select class="edit-swap-select" id="sel-emoji-pro">
+                    <option value="🥩">🥩 Steak</option>
+                    <option value="🍗">🍗 Hähnchen</option>
+                    <option value="🥚">🥚 Ei</option>
+                </select>
+            </div>
+            <div class="edit-input-group" style="padding-bottom: 8px;">
+                <label style="font-size: 14px; color: var(--text-muted); margin-bottom: 6px;">Kohlenhydrate Icon</label>
+                <select class="edit-swap-select" id="sel-emoji-carb">
+                    <option value="🍚">🍚 Reis</option>
+                    <option value="🥔">🥔 Kartoffel</option>
+                    <option value="🍞">🍞 Brot</option>
+                </select>
+            </div>
+            <div class="edit-input-group" style="padding-bottom: 8px;">
+                <label style="font-size: 14px; color: var(--text-muted); margin-bottom: 6px;">Fette Icon</label>
+                <select class="edit-swap-select" id="sel-emoji-fat">
+                    <option value="🥑">🥑 Avocado</option>
+                    <option value="🧈">🧈 Butter</option>
+                    <option value="🥜">🥜 Erdnuss</option>
+                </select>
+            </div>
+            
+            <button class="btn-save" onclick="saveEmojis()">Speichern</button>
+            <button class="btn-cancel" onclick="closeModal('emojiModal')">Schließen</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
-            <h2>Einstellungen</h2>
+            <h2>Makro Ziele</h2>
             <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top:-15px;">Ziele gelten für alle Tage</p>
             
             <div class="input-group">
@@ -186,12 +250,21 @@
     <script>
         let currentDateObj = new Date(); 
         let currentDateStr = ""; 
+        const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
 
         const defaultGoals = { kcal: 2800, pro: 180, carb: 350, fat: 80 };
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0 };
+        let currentWater = 0;
         let generatedOptions = []; 
         let currentEditMeal = null; 
         let editingHistoryIndex = -1; 
+
+        // Emojis Setup
+        let emojis = {
+            pro: localStorage.getItem('emoji_pro') || '🥩',
+            carb: localStorage.getItem('emoji_carb') || '🍚',
+            fat: localStorage.getItem('emoji_fat') || '🥑'
+        };
 
         const db = {
             skyr: { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65, cat: 'pro' },
@@ -217,11 +290,7 @@
             gouda: { n: "Gouda Light", p: 0.30, c: 0.00, f: 0.17, k: 2.73, cat: 'fat' }
         };
 
-        function getFirstIdForCat(cat) {
-            for (let id in db) { if (db[id].cat === cat) return id; }
-            return null;
-        }
-
+        function getFirstIdForCat(cat) { for (let id in db) { if (db[id].cat === cat) return id; } return null; }
         function round(val, step) { return Math.max(0, Math.round(val / step) * step); }
         function getKey(base) { return `${base}_${currentDateStr}`; }
         function formatDiff(val) { return val < 0 ? `<span style="color: var(--danger); font-weight: 700;">${val}</span>` : val; }
@@ -230,6 +299,7 @@
             let d = currentDateObj.getDate().toString().padStart(2, '0');
             let m = (currentDateObj.getMonth() + 1).toString().padStart(2, '0');
             let y = currentDateObj.getFullYear();
+            let dayName = weekdays[currentDateObj.getDay()];
             currentDateStr = `${y}-${m}-${d}`;
 
             let today = new Date();
@@ -237,13 +307,20 @@
                            m === (today.getMonth() + 1).toString().padStart(2, '0') && 
                            y === today.getFullYear().toString());
 
-            document.getElementById('display-date').innerText = isToday ? `Heute, ${d}.${m}.` : `${d}.${m}.${y}`;
-            document.getElementById('header-title').innerText = isToday ? 'Heute' : 'Rückblick';
+            document.getElementById('display-date').innerText = isToday ? `Heute, ${d}.${m}.` : `${dayName} ${d}.${m}.${y}`;
+            document.getElementById('native-date-picker').value = currentDateStr; // Sync picker
+            
             loadData();
         }
 
         function changeDate(days) {
             currentDateObj.setDate(currentDateObj.getDate() + days);
+            updateDateDisplay();
+        }
+
+        function jumpToDate(dateString) {
+            if(!dateString) return;
+            currentDateObj = new Date(dateString);
             updateDateDisplay();
         }
 
@@ -262,6 +339,8 @@
                 fat: parseInt(localStorage.getItem(getKey('eaten_fat'))) || 0
             };
 
+            currentWater = parseInt(localStorage.getItem(getKey('water_ml'))) || 0;
+
             document.getElementById('display-kcal-goal').innerText = goals.kcal;
             document.getElementById('display-kcal-eaten').innerText = currentEaten.kcal;
             document.getElementById('display-kcal-left').innerText = Math.max(0, goals.kcal - currentEaten.kcal);
@@ -277,6 +356,9 @@
             document.getElementById('bar-carb').style.width = Math.min(100, (currentEaten.carb / goals.carb) * 100) + '%';
             document.getElementById('bar-fat').style.width = Math.min(100, (currentEaten.fat / goals.fat) * 100) + '%';
 
+            document.getElementById('display-water').innerText = currentWater;
+            document.getElementById('bar-water').style.width = Math.min(100, (currentWater / 3000) * 100) + '%';
+
             document.getElementById('input-goal-kcal').value = goals.kcal;
             document.getElementById('input-goal-pro').value = goals.pro;
             document.getElementById('slider-goal-pro').value = goals.pro;
@@ -286,6 +368,13 @@
             document.getElementById('slider-goal-fat').value = goals.fat;
 
             loadHistory();
+        }
+
+        function addWater(ml) {
+            currentWater += ml;
+            localStorage.setItem(getKey('water_ml'), currentWater);
+            document.getElementById('display-water').innerText = currentWater;
+            document.getElementById('bar-water').style.width = Math.min(100, (currentWater / 3000) * 100) + '%';
         }
 
         let startX = 0, currentX = 0, swipingIndex = -1, isScrolling = false;
@@ -344,9 +433,9 @@
                             <div class="history-title">${item.name}</div>
                             <div class="history-macros">
                                 <span>🔥 ${item.kcal} kcal</span>
-                                <span style="color: var(--protein)">🥩 ${item.pro}g</span>
-                                <span style="color: var(--carbs)">🍚 ${item.carb}g</span>
-                                <span style="color: var(--fats)">🥑 ${item.fat}g</span>
+                                <span style="color: var(--protein)">${emojis.pro} ${item.pro}g</span>
+                                <span style="color: var(--carbs)">${emojis.carb} ${item.carb}g</span>
+                                <span style="color: var(--fats)">${emojis.fat} ${item.fat}g</span>
                             </div>
                         </div>
                     </div>
@@ -443,17 +532,17 @@
                         <div class="option-items">${textString.replace(/\+/g, '<br>+ ')}</div>
                         <div class="option-macros">
                             <span>🔥 ${Math.round(previewKcal)} kcal</span>
-                            <span style="color: var(--protein)">🥩 ${Math.round(previewPro)}g</span>
-                            <span style="color: var(--carbs)">🍚 ${Math.round(previewCarb)}g</span>
-                            <span style="color: var(--fats)">🥑 ${Math.round(previewFat)}g</span>
+                            <span style="color: var(--protein)">${emojis.pro} ${Math.round(previewPro)}g</span>
+                            <span style="color: var(--carbs)">${emojis.carb} ${Math.round(previewCarb)}g</span>
+                            <span style="color: var(--fats)">${emojis.fat} ${Math.round(previewFat)}g</span>
                         </div>
                         <div class="preview-box">
                             <div class="preview-title">Danach noch übrig:</div>
                             <div class="history-macros" style="font-size: 13px;">
                                 <span>🔥 ${formatDiff(afterKcal)}</span>
-                                <span>🥩 ${formatDiff(afterPro)}g</span>
-                                <span>🍚 ${formatDiff(afterCarb)}g</span>
-                                <span>🥑 ${formatDiff(afterFat)}g</span>
+                                <span>${emojis.pro} ${formatDiff(afterPro)}g</span>
+                                <span>${emojis.carb} ${formatDiff(afterCarb)}g</span>
+                                <span>${emojis.fat} ${formatDiff(afterFat)}g</span>
                             </div>
                         </div>
                         <button class="btn-eat-option" onclick="openNewEditMeal(${index})">Anpassen & Essen</button>
@@ -479,9 +568,9 @@
                 inputsHtml += `
                     <div class="edit-input-group">
                         <select class="edit-swap-select cat-select" onchange="changeItemCategory(${i}, this.value)">
-                            <option value="pro" ${cat === 'pro' ? 'selected' : ''}>Kategorie: Protein (Skyr, Pute, Eier...)</option>
-                            <option value="carb" ${cat === 'carb' ? 'selected' : ''}>Kategorie: Kohlenhydrate (Reis, Hafer...)</option>
-                            <option value="fat" ${cat === 'fat' ? 'selected' : ''}>Kategorie: Fett (Öl, Butter, Chia...)</option>
+                            <option value="pro" ${cat === 'pro' ? 'selected' : ''}>Kategorie: Protein (${emojis.pro})</option>
+                            <option value="carb" ${cat === 'carb' ? 'selected' : ''}>Kategorie: Kohlenhydrate (${emojis.carb})</option>
+                            <option value="fat" ${cat === 'fat' ? 'selected' : ''}>Kategorie: Fett (${emojis.fat})</option>
                         </select>
                         <div class="edit-input-wrapper">
                             <select class="edit-swap-select" style="margin-bottom:0; width:60%;" onchange="swapEditItem(${i}, this.value)">
@@ -601,16 +690,16 @@
 
             document.getElementById('edit-meal-macros').innerHTML = `
                 🔥 <b>${currentEditMeal.kcal} kcal</b> <br>
-                <span style="color: var(--protein)">🥩 ${currentEditMeal.pro}g</span> &nbsp;|&nbsp;
-                <span style="color: var(--carbs)">🍚 ${currentEditMeal.carb}g</span> &nbsp;|&nbsp;
-                <span style="color: var(--fats)">🥑 ${currentEditMeal.fat}g</span>
+                <span style="color: var(--protein)">${emojis.pro} ${currentEditMeal.pro}g</span> &nbsp;|&nbsp;
+                <span style="color: var(--carbs)">${emojis.carb} ${currentEditMeal.carb}g</span> &nbsp;|&nbsp;
+                <span style="color: var(--fats)">${emojis.fat} ${currentEditMeal.fat}g</span>
                 <div class="preview-box" style="margin-top: 14px; margin-bottom: 0;">
                     <div class="preview-title">Danach noch übrig:</div>
                     <div class="history-macros" style="font-size: 13px;">
                         <span>🔥 ${formatDiff(afterKcal)}</span>
-                        <span>🥩 ${formatDiff(afterPro)}g</span>
-                        <span>🍚 ${formatDiff(afterCarb)}g</span>
-                        <span>🥑 ${formatDiff(afterFat)}g</span>
+                        <span>${emojis.pro} ${formatDiff(afterPro)}g</span>
+                        <span>${emojis.carb} ${formatDiff(afterCarb)}g</span>
+                        <span>${emojis.fat} ${formatDiff(afterFat)}g</span>
                     </div>
                 </div>
             `;
@@ -644,8 +733,26 @@
         }
 
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; setTimeout(() => document.getElementById('settingsModal').style.opacity = '1', 10); }
+        function openEmojiSettings() { 
+            document.getElementById('sel-emoji-pro').value = emojis.pro;
+            document.getElementById('sel-emoji-carb').value = emojis.carb;
+            document.getElementById('sel-emoji-fat').value = emojis.fat;
+            document.getElementById('emojiModal').style.display = 'flex'; 
+            setTimeout(() => document.getElementById('emojiModal').style.opacity = '1', 10); 
+        }
         function openMealBrain() { document.getElementById('mealModal').style.display = 'flex'; setTimeout(() => document.getElementById('mealModal').style.opacity = '1', 10); generateMeals(); }
         function closeModal(id) { const modal = document.getElementById(id); modal.style.opacity = '0'; setTimeout(() => modal.style.display = 'none', 200); }
+        
+        function saveEmojis() {
+            emojis.pro = document.getElementById('sel-emoji-pro').value;
+            emojis.carb = document.getElementById('sel-emoji-carb').value;
+            emojis.fat = document.getElementById('sel-emoji-fat').value;
+            localStorage.setItem('emoji_pro', emojis.pro);
+            localStorage.setItem('emoji_carb', emojis.carb);
+            localStorage.setItem('emoji_fat', emojis.fat);
+            loadData(); closeModal('emojiModal');
+        }
+
         function saveGoals() {
             localStorage.setItem('goal_kcal', document.getElementById('input-goal-kcal').value);
             localStorage.setItem('goal_pro', document.getElementById('input-goal-pro').value);
