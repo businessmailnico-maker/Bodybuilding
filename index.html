@@ -51,6 +51,9 @@
         .option-macros { font-size: 12px; color: var(--text-muted); font-weight: 500; display: flex; justify-content: space-between; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid #E5E5EA; }
         .btn-eat-option { background-color: var(--accent); color: white; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; }
 
+        .preview-box { background: var(--card-bg); border-radius: 10px; padding: 10px; margin-bottom: 12px; }
+        .preview-title { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        
         /* Edit View Styling */
         #edit-meal-macros { background: var(--bg-color); padding: 14px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-size: 14px; font-weight: 500; line-height: 1.6; }
         .edit-input-group { display: flex; flex-direction: column; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #E5E5EA; }
@@ -74,7 +77,7 @@
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; cursor: pointer;}
 
-        /* Historie Styling (Swipe) */
+        /* Historie Styling */
         .history-item-container { position: relative; margin-bottom: 12px; border-radius: 14px; overflow: hidden; background: var(--danger); }
         .history-card { background: var(--card-bg); padding: 16px; position: relative; z-index: 2; transition: transform 0.2s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-radius: 14px; }
         .history-delete-btn { position: absolute; top: 0; right: 0; bottom: 0; width: 80px; background: var(--danger); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; z-index: 1; cursor: pointer;}
@@ -180,9 +183,8 @@
     </div>
 
     <script>
-        // --- Datenstruktur & Kalender ---
-        let currentDateObj = new Date(); // Nutzt immer das echte System-Datum als Start
-        let currentDateStr = ""; // Format YYYY-MM-DD als Schlüssel für LocalStorage
+        let currentDateObj = new Date(); 
+        let currentDateStr = ""; 
 
         const defaultGoals = { kcal: 2800, pro: 180, carb: 350, fat: 80 };
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0 };
@@ -221,6 +223,7 @@
 
         function round(val, step) { return Math.max(0, Math.round(val / step) * step); }
         function getKey(base) { return `${base}_${currentDateStr}`; }
+        function formatDiff(val) { return val < 0 ? `<span style="color: var(--danger); font-weight: 700;">${val}</span>` : val; }
 
         function updateDateDisplay() {
             let d = currentDateObj.getDate().toString().padStart(2, '0');
@@ -284,7 +287,6 @@
             loadHistory();
         }
 
-        // --- Swipe & Touch Logic ---
         let startX = 0, currentX = 0, swipingIndex = -1, isScrolling = false;
         let pressTimer = null;
 
@@ -363,6 +365,7 @@
 
         function generateMeals() {
             const goals = {
+                kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal,
                 pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro,
                 carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb,
                 fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat
@@ -371,10 +374,10 @@
             let remPro = Math.max(0, goals.pro - currentEaten.pro);
             let remCarb = Math.max(0, goals.carb - currentEaten.carb);
             let remFat = Math.max(0, goals.fat - currentEaten.fat);
-            let remKcal = (remPro * 4) + (remCarb * 4) + (remFat * 9);
+            let remKcal = Math.max(0, goals.kcal - currentEaten.kcal);
             
             let targetKcal = Math.min(remKcal, 750); 
-            let factor = remKcal > 0 ? targetKcal / remKcal : 0;
+            let factor = remKcal > 0 ? targetKcal / ((remPro * 4) + (remCarb * 4) + (remFat * 9)) : 0;
 
             let mealPro = remPro * factor;
             let mealCarb = remCarb * factor;
@@ -383,7 +386,7 @@
             const container = document.getElementById('options-container');
             generatedOptions = [];
 
-            if (remKcal === 0) {
+            if (remKcal <= 0) {
                 container.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px; text-align: center; padding: 20px;">Alle Makros erfüllt! 💪</div>`;
                 return;
             }
@@ -426,6 +429,12 @@
                         previewPro += i.grams * db[i.id].p; previewCarb += i.grams * db[i.id].c;
                         previewFat += i.grams * db[i.id].f; previewKcal += i.grams * db[i.id].k;
                     });
+                    
+                    let afterKcal = Math.round(goals.kcal - currentEaten.kcal - previewKcal);
+                    let afterPro = Math.round(goals.pro - currentEaten.pro - previewPro);
+                    let afterCarb = Math.round(goals.carb - currentEaten.carb - previewCarb);
+                    let afterFat = Math.round(goals.fat - currentEaten.fat - previewFat);
+
                     let textString = opt.items.map(i => `${i.grams}g ${i.name}`).join(' + ');
                     return `
                     <div class="option-card">
@@ -437,13 +446,21 @@
                             <span style="color: var(--carbs)">🍚 ${Math.round(previewCarb)}g</span>
                             <span style="color: var(--fats)">🥑 ${Math.round(previewFat)}g</span>
                         </div>
+                        <div class="preview-box">
+                            <div class="preview-title">Danach noch übrig:</div>
+                            <div class="history-macros" style="font-size: 13px;">
+                                <span>🔥 ${formatDiff(afterKcal)} kcal</span>
+                                <span>🥩 ${formatDiff(afterPro)}g</span>
+                                <span>🍚 ${formatDiff(afterCarb)}g</span>
+                                <span>🥑 ${formatDiff(afterFat)}g</span>
+                            </div>
+                        </div>
                         <button class="btn-eat-option" onclick="openNewEditMeal(${index})">Anpassen & Essen</button>
                     </div>`;
                 }).join('');
             }
         }
 
-        // --- Edit View & Items Render Logic ---
         function getOptionsForCategory(category, selectedId) {
             let options = '';
             for (let key in db) {
@@ -509,7 +526,7 @@
         }
 
         function addEditItem() {
-            let defaultId = getFirstIdForCat('pro'); // Standard: Protein
+            let defaultId = getFirstIdForCat('pro'); 
             currentEditMeal.items.push({ id: defaultId, name: db[defaultId].n, grams: 0 });
             renderEditInputs();
             updateEditMacros();
@@ -549,11 +566,45 @@
             currentEditMeal.fat = Math.round(totalFat);
             currentEditMeal.kcal = Math.round(totalKcal);
 
+            const goals = {
+                kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal,
+                pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro,
+                carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb,
+                fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat
+            };
+
+            let baseEatenKcal = currentEaten.kcal;
+            let baseEatenPro = currentEaten.pro;
+            let baseEatenCarb = currentEaten.carb;
+            let baseEatenFat = currentEaten.fat;
+
+            if (editingHistoryIndex >= 0) {
+                let oldItem = JSON.parse(localStorage.getItem(getKey('food_history')))[editingHistoryIndex];
+                baseEatenKcal = Math.max(0, baseEatenKcal - oldItem.kcal);
+                baseEatenPro = Math.max(0, baseEatenPro - oldItem.pro);
+                baseEatenCarb = Math.max(0, baseEatenCarb - oldItem.carb);
+                baseEatenFat = Math.max(0, baseEatenFat - oldItem.fat);
+            }
+
+            let afterKcal = goals.kcal - baseEatenKcal - currentEditMeal.kcal;
+            let afterPro = goals.pro - baseEatenPro - currentEditMeal.pro;
+            let afterCarb = goals.carb - baseEatenCarb - currentEditMeal.carb;
+            let afterFat = goals.fat - baseEatenFat - currentEditMeal.fat;
+
             document.getElementById('edit-meal-macros').innerHTML = `
                 🔥 <b>${currentEditMeal.kcal} kcal</b> <br>
                 <span style="color: var(--protein)">🥩 ${currentEditMeal.pro}g</span> &nbsp;|&nbsp;
                 <span style="color: var(--carbs)">🍚 ${currentEditMeal.carb}g</span> &nbsp;|&nbsp;
                 <span style="color: var(--fats)">🥑 ${currentEditMeal.fat}g</span>
+                <div class="preview-box" style="margin-top: 14px; margin-bottom: 0;">
+                    <div class="preview-title">Danach noch übrig:</div>
+                    <div class="history-macros" style="font-size: 13px;">
+                        <span>🔥 ${formatDiff(afterKcal)}</span>
+                        <span>🥩 ${formatDiff(afterPro)}g</span>
+                        <span>🍚 ${formatDiff(afterCarb)}g</span>
+                        <span>🥑 ${formatDiff(afterFat)}g</span>
+                    </div>
+                </div>
             `;
         }
 
@@ -595,7 +646,6 @@
             loadData(); closeModal('settingsModal');
         }
 
-        // Init App
         updateDateDisplay(); 
     </script>
 </body>
