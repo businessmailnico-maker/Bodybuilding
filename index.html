@@ -35,17 +35,15 @@
         .btn-reset { background-color: var(--bg-color); color: var(--danger); font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 20px; }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.2s; }
-        .modal { background: var(--card-bg); width: 85%; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
+        .modal { background: var(--card-bg); width: 85%; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-height: 85vh; overflow-y: auto; }
         .modal h2 { margin-top: 0; font-size: 20px; margin-bottom: 20px; text-align: center; }
         
-        /* Select Dropdowns */
-        .select-group { margin-bottom: 12px; }
-        .select-label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block; text-transform: uppercase; }
-        select.ios-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #E5E5EA; background-color: var(--bg-color); font-size: 16px; font-weight: 600; appearance: none; -webkit-appearance: none; cursor: pointer; }
-        
-        .color-pro { color: var(--protein); }
-        .color-carb { color: var(--carbs); }
-        .color-fat { color: var(--fats); }
+        /* Options-Karten im Modal */
+        .option-card { background: var(--bg-color); border-radius: 14px; padding: 16px; margin-bottom: 16px; text-align: left; }
+        .option-card h3 { margin: 0 0 10px 0; font-size: 16px; color: var(--text-main); }
+        .option-items { font-size: 15px; font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+        .option-macros { font-size: 12px; color: var(--text-muted); font-weight: 500; display: flex; justify-content: space-between; margin-bottom: 12px; padding-top: 8px; border-top: 1px solid #E5E5EA; }
+        .btn-eat-option { background-color: var(--accent); color: white; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; }
 
         /* Slider Styling */
         .input-group { margin-bottom: 20px; }
@@ -66,11 +64,6 @@
 
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; }
-
-        .suggestion-box { background: var(--bg-color); padding: 16px; border-radius: 12px; margin-top: 16px; margin-bottom: 16px; text-align: center; }
-        .food-item { font-size: 20px; font-weight: 700; color: var(--text-main); margin: 4px 0 12px 0; }
-        .food-item:last-child { margin-bottom: 0; }
-        .food-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
 
         /* Historie Styling */
         .history-card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
@@ -116,52 +109,20 @@
 
     <button class="btn-add" onclick="openMealBrain()">+ Mahlzeit berechnen</button>
 
-    <!-- Historie -->
     <h2 style="font-size: 20px; margin-bottom: 12px;">Gegessen</h2>
     <div id="history-list"></div>
 
     <!-- Meal Brain Modal -->
     <div class="modal-overlay" id="mealModal">
         <div class="modal">
-            <h2>Deine Zutaten</h2>
+            <h2>Deine Optionen</h2>
+            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Praktisch gerundet auf deine restlichen Makros:</p>
             
-            <div class="select-group">
-                <span class="select-label color-pro">Protein Quelle</span>
-                <select class="ios-select color-pro" id="sel-pro" onchange="calculateBrain()">
-                    <option value="skyr">Skyr</option>
-                    <option value="putenhack">Putenhack</option>
-                    <option value="magerquark">Magerquark</option>
-                    <option value="whey_1">Whey Protein</option>
-                    <option value="whey_2">Whey Protein (Alt.)</option>
-                    <option value="eier">Eier</option>
-                </select>
+            <div id="options-container">
+                <!-- Wird per JS befüllt -->
             </div>
 
-            <div class="select-group">
-                <span class="select-label color-carb">Kohlenhydrat Quelle</span>
-                <select class="ios-select color-carb" id="sel-carb" onchange="calculateBrain()">
-                    <option value="reis">Reis</option>
-                    <option value="kartoffeln">Kartoffeln</option>
-                    <option value="haferflocken">Haferflocken</option>
-                    <option value="maiswaffeln">Maiswaffeln</option>
-                </select>
-            </div>
-
-            <div class="select-group">
-                <span class="select-label color-fat">Fett Quelle</span>
-                <select class="ios-select color-fat" id="sel-fat" onchange="calculateBrain()">
-                    <option value="butter">Butter</option>
-                    <option value="olivenoel">Olivenöl</option>
-                    <option value="chiasamen">Chiasamen</option>
-                    <option value="leinsamen">Leinsamen</option>
-                    <option value="gratinkaese">Gratinkäse Light</option>
-                    <option value="gouda">Gouda Light</option>
-                </select>
-            </div>
-
-            <div class="suggestion-box" id="suggestion-content"></div>
-            <button class="btn-save" onclick="eatSuggestion()" id="btn-eat">Das esse ich jetzt!</button>
-            <button class="btn-cancel" onclick="closeModal('mealModal')">Abbrechen</button>
+            <button class="btn-cancel" style="margin-top: 10px;" onclick="closeModal('mealModal')">Abbrechen</button>
         </div>
     </div>
 
@@ -197,33 +158,28 @@
     <script>
         const defaultGoals = { kcal: 2800, pro: 180, carb: 350, fat: 80 };
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0 };
-        let currentSuggestion = { name: "", kcal: 0, pro: 0, carb: 0, fat: 0 };
+        let generatedOptions = []; // Speichert die aktuellen Vorschläge
 
-        // Neue dynamische Lebensmittel-Datenbank pro 1g
+        // Die vollständige Datenbank inkl. TK Gemüse
         const db = {
-            pro: {
-                "skyr": { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65 },
-                "putenhack": { n: "Putenhack", p: 0.20, c: 0.00, f: 0.05, k: 1.25 },
-                "magerquark": { n: "Magerquark", p: 0.12, c: 0.04, f: 0.002, k: 0.68 },
-                "whey_1": { n: "Whey Protein", p: 0.80, c: 0.05, f: 0.05, k: 3.85 },
-                "whey_2": { n: "Whey Protein (Alt.)", p: 0.75, c: 0.08, f: 0.06, k: 3.86 },
-                "eier": { n: "Eier", p: 0.13, c: 0.01, f: 0.11, k: 1.55 }
-            },
-            carb: {
-                "reis": { n: "Reis", p: 0.08, c: 0.78, f: 0.01, k: 3.53 },
-                "kartoffeln": { n: "Kartoffeln", p: 0.02, c: 0.15, f: 0.001, k: 0.70 },
-                "haferflocken": { n: "Haferflocken", p: 0.135, c: 0.59, f: 0.07, k: 3.70 },
-                "maiswaffeln": { n: "Maiswaffeln", p: 0.08, c: 0.80, f: 0.01, k: 3.61 }
-            },
-            fat: {
-                "butter": { n: "Butter", p: 0.01, c: 0.01, f: 0.82, k: 7.40 },
-                "olivenoel": { n: "Olivenöl", p: 0.00, c: 0.00, f: 1.00, k: 9.00 },
-                "chiasamen": { n: "Chiasamen", p: 0.17, c: 0.05, f: 0.31, k: 4.86 },
-                "leinsamen": { n: "Leinsamen", p: 0.18, c: 0.29, f: 0.42, k: 5.34 },
-                "gratinkaese": { n: "Gratinkäse Light", p: 0.28, c: 0.01, f: 0.16, k: 2.60 },
-                "gouda": { n: "Gouda Light", p: 0.30, c: 0.00, f: 0.17, k: 2.73 }
-            }
+            skyr: { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65 },
+            putenhack: { n: "Putenhack", p: 0.20, c: 0.00, f: 0.05, k: 1.25 },
+            magerquark: { n: "Magerquark", p: 0.12, c: 0.04, f: 0.002, k: 0.68 },
+            whey: { n: "Whey Protein", p: 0.80, c: 0.05, f: 0.05, k: 3.85 },
+            eier: { n: "Eier", p: 0.13, c: 0.01, f: 0.11, k: 1.55 },
+            reis: { n: "Reis (roh)", p: 0.08, c: 0.78, f: 0.01, k: 3.53 },
+            kartoffeln: { n: "Kartoffeln (roh)", p: 0.02, c: 0.15, f: 0.001, k: 0.70 },
+            haferflocken: { n: "Haferflocken", p: 0.135, c: 0.59, f: 0.07, k: 3.70 },
+            maiswaffeln: { n: "Maiswaffeln", p: 0.08, c: 0.80, f: 0.01, k: 3.61 },
+            tk_gemuese: { n: "TK Gemüse", p: 0.025, c: 0.04, f: 0.005, k: 0.30 }, // Neu
+            butter: { n: "Butter", p: 0.01, c: 0.01, f: 0.82, k: 7.40 },
+            olivenoel: { n: "Olivenöl", p: 0.00, c: 0.00, f: 1.00, k: 9.00 },
+            chiasamen: { n: "Chiasamen", p: 0.17, c: 0.05, f: 0.31, k: 4.86 }
         };
+
+        function round(val, step) {
+            return Math.max(0, Math.round(val / step) * step);
+        }
 
         function loadData() {
             const goals = {
@@ -299,11 +255,10 @@
             const carb = parseInt(document.getElementById('input-goal-carb').value) || 0;
             const fat = parseInt(document.getElementById('input-goal-fat').value) || 0;
             
-            const autoKcal = (pro * 4) + (carb * 4) + (fat * 9);
-            document.getElementById('input-goal-kcal').value = autoKcal;
+            document.getElementById('input-goal-kcal').value = (pro * 4) + (carb * 4) + (fat * 9);
         }
 
-        function calculateBrain() {
+        function generateMeals() {
             const goals = {
                 pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro,
                 carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb,
@@ -314,76 +269,106 @@
             let remCarb = Math.max(0, goals.carb - currentEaten.carb);
             let remFat = Math.max(0, goals.fat - currentEaten.fat);
 
-            const box = document.getElementById('suggestion-content');
-            const btn = document.getElementById('btn-eat');
+            const container = document.getElementById('options-container');
+            generatedOptions = [];
 
             if (remPro === 0 && remCarb === 0 && remFat === 0) {
-                box.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px;">Alle Makros erfüllt! 💪</div>`;
-                btn.style.display = 'none';
+                container.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px; text-align: center; padding: 20px;">Alle Makros erfüllt! 💪</div>`;
                 return;
             }
 
-            btn.style.display = 'block';
+            // OPTION 1: Herzhaft (Putenhack, Reis, TK Gemüse, Olivenöl)
+            let o1_g_gemuese = (remCarb > 15 && remPro > 10) ? 150 : 0; // Fixe 150g Gemüse, wenn Platz ist
+            let o1_c_left = Math.max(0, remCarb - (o1_g_gemuese * db.tk_gemuese.c));
+            let o1_g_reis = round(o1_c_left / db.reis.c, 5); // 5g Schritte für Reis
+            
+            let o1_p_left = Math.max(0, remPro - (o1_g_gemuese * db.tk_gemuese.p) - (o1_g_reis * db.reis.p));
+            let o1_g_pute = round(o1_p_left / db.putenhack.p, 10); // 10g Schritte für Fleisch
+            
+            let o1_f_left = Math.max(0, remFat - (o1_g_gemuese * db.tk_gemuese.f) - (o1_g_reis * db.reis.f) - (o1_g_pute * db.putenhack.f));
+            let o1_g_oil = round(o1_f_left / db.olivenoel.f, 5); // 5g Schritte für Öl
 
-            let f1 = db.pro[document.getElementById('sel-pro').value];
-            let f2 = db.carb[document.getElementById('sel-carb').value];
-            let f3 = db.fat[document.getElementById('sel-fat').value];
+            // Realistische Summen für Option 1 berechnen
+            let o1_pro = Math.round((o1_g_gemuese * db.tk_gemuese.p) + (o1_g_reis * db.reis.p) + (o1_g_pute * db.putenhack.p) + (o1_g_oil * db.olivenoel.p));
+            let o1_carb = Math.round((o1_g_gemuese * db.tk_gemuese.c) + (o1_g_reis * db.reis.c) + (o1_g_pute * db.putenhack.c) + (o1_g_oil * db.olivenoel.c));
+            let o1_fat = Math.round((o1_g_gemuese * db.tk_gemuese.f) + (o1_g_reis * db.reis.f) + (o1_g_pute * db.putenhack.f) + (o1_g_oil * db.olivenoel.f));
+            let o1_kcal = Math.round((o1_g_gemuese * db.tk_gemuese.k) + (o1_g_reis * db.reis.k) + (o1_g_pute * db.putenhack.k) + (o1_g_oil * db.olivenoel.k));
 
-            // 3-Wege Matrix Berechnung (Cramersche Regel)
-            let det = f1.p*(f2.c*f3.f - f2.f*f3.c) - f2.p*(f1.c*f3.f - f1.f*f3.c) + f3.p*(f1.c*f2.f - f1.f*f2.c);
-            let detX = remPro*(f2.c*f3.f - f2.f*f3.c) - f2.p*(remCarb*f3.f - remFat*f3.c) + f3.p*(remCarb*f2.f - remFat*f2.c);
-            let detY = f1.p*(remCarb*f3.f - remFat*f3.c) - remPro*(f1.c*f3.f - f1.f*f3.c) + f3.p*(f1.c*remFat - f1.f*remCarb);
-            let detZ = f1.p*(f2.c*remFat - f2.f*remCarb) - f2.p*(f1.c*remFat - f1.f*remCarb) + remPro*(f1.c*f2.f - f1.f*f2.c);
+            let o1_items = [];
+            if(o1_g_pute > 0) o1_items.push(`${o1_g_pute}g Putenhack`);
+            if(o1_g_reis > 0) o1_items.push(`${o1_g_reis}g Reis`);
+            if(o1_g_gemuese > 0) o1_items.push(`${o1_g_gemuese}g TK Gemüse`);
+            if(o1_g_oil > 0) o1_items.push(`${o1_g_oil}g Olivenöl`);
 
-            let g1 = det !== 0 ? Math.round(detX / det) : 0;
-            let g2 = det !== 0 ? Math.round(detY / det) : 0;
-            let g3 = det !== 0 ? Math.round(detZ / det) : 0;
-
-            // Fallback: Wenn die Mathe unmöglich ist (Gegensätzliche Makros), berechnen wir linear
-            if (g1 < 0 || g2 < 0 || g3 < 0 || det === 0) {
-                g1 = Math.max(0, Math.round(remPro / (f1.p || 1)));
-                let leftCarbs = Math.max(0, remCarb - (g1 * f1.c));
-                g2 = Math.max(0, Math.round(leftCarbs / (f2.c || 1)));
-                let leftFats = Math.max(0, remFat - (g1 * f1.f) - (g2 * f2.f));
-                g3 = Math.max(0, Math.round(leftFats / (f3.f || 1)));
+            if(o1_items.length > 0) {
+                generatedOptions.push({
+                    title: "Herzhaftes Menü",
+                    name: o1_items.join(" + "),
+                    pro: o1_pro, carb: o1_carb, fat: o1_fat, kcal: o1_kcal
+                });
             }
 
-            let nameArray = [];
-            let uiString = "";
+            // OPTION 2: Süß (Skyr, Haferflocken, Chiasamen)
+            let o2_g_chia = round(Math.min(30, remFat / db.chiasamen.f), 5); // Max 30g Chia
+            let o2_c_left = Math.max(0, remCarb - (o2_g_chia * db.chiasamen.c));
+            let o2_g_oats = round(o2_c_left / db.haferflocken.c, 5); // 5g Schritte
+            
+            let o2_p_left = Math.max(0, remPro - (o2_g_chia * db.chiasamen.p) - (o2_g_oats * db.haferflocken.p));
+            let o2_g_skyr = round(o2_p_left / db.skyr.p, 10); // 10g Schritte
 
-            if (g1 > 0) { nameArray.push(`${g1}g ${f1.n}`); uiString += `<div class="food-label color-pro">${f1.n}</div><div class="food-item">${g1} g</div>`; }
-            if (g2 > 0) { nameArray.push(`${g2}g ${f2.n}`); uiString += `<div class="food-label color-carb">${f2.n}</div><div class="food-item">${g2} g</div>`; }
-            if (g3 > 0) { nameArray.push(`${g3}g ${f3.n}`); uiString += `<div class="food-label color-fat">${f3.n}</div><div class="food-item">${g3} g</div>`; }
+            let o2_pro = Math.round((o2_g_chia * db.chiasamen.p) + (o2_g_oats * db.haferflocken.p) + (o2_g_skyr * db.skyr.p));
+            let o2_carb = Math.round((o2_g_chia * db.chiasamen.c) + (o2_g_oats * db.haferflocken.c) + (o2_g_skyr * db.skyr.c));
+            let o2_fat = Math.round((o2_g_chia * db.chiasamen.f) + (o2_g_oats * db.haferflocken.f) + (o2_g_skyr * db.skyr.f));
+            let o2_kcal = Math.round((o2_g_chia * db.chiasamen.k) + (o2_g_oats * db.haferflocken.k) + (o2_g_skyr * db.skyr.k));
 
-            if (nameArray.length === 0) {
-                uiString = `<div style="color: var(--warning); font-weight: bold;">Du brauchst keine dieser Zutaten mehr.</div>`;
-                btn.style.display = 'none';
+            let o2_items = [];
+            if(o2_g_skyr > 0) o2_items.push(`${o2_g_skyr}g Skyr`);
+            if(o2_g_oats > 0) o2_items.push(`${o2_g_oats}g Haferflocken`);
+            if(o2_g_chia > 0) o2_items.push(`${o2_g_chia}g Chiasamen`);
+
+            if(o2_items.length > 0) {
+                generatedOptions.push({
+                    title: "Süßes Menü",
+                    name: o2_items.join(" + "),
+                    pro: o2_pro, carb: o2_carb, fat: o2_fat, kcal: o2_kcal
+                });
             }
 
-            currentSuggestion = {
-                name: nameArray.join(" + "),
-                pro: Math.round(g1 * f1.p + g2 * f2.p + g3 * f3.p),
-                carb: Math.round(g1 * f1.c + g2 * f2.c + g3 * f3.c),
-                fat: Math.round(g1 * f1.f + g2 * f2.f + g3 * f3.f),
-                kcal: Math.round(g1 * f1.k + g2 * f2.k + g3 * f3.k)
-            };
-
-            box.innerHTML = uiString;
+            // HTML Rendern
+            if (generatedOptions.length === 0) {
+                container.innerHTML = `<div style="color: var(--warning); text-align: center;">Du brauchst heute kaum noch etwas, berechne manuell.</div>`;
+            } else {
+                container.innerHTML = generatedOptions.map((opt, index) => `
+                    <div class="option-card">
+                        <h3>${opt.title}</h3>
+                        <div class="option-items">${opt.name.replace(/\+/g, '<br>+ ')}</div>
+                        <div class="option-macros">
+                            <span>🔥 ${opt.kcal} kcal</span>
+                            <span style="color: var(--protein)">🥩 ${opt.pro}g</span>
+                            <span style="color: var(--carbs)">🍚 ${opt.carb}g</span>
+                            <span style="color: var(--fats)">🥑 ${opt.fat}g</span>
+                        </div>
+                        <button class="btn-eat-option" onclick="eatOption(${index})">Das esse ich!</button>
+                    </div>
+                `).join('');
+            }
         }
 
-        function eatSuggestion() {
-            localStorage.setItem('eaten_kcal', currentEaten.kcal + currentSuggestion.kcal);
-            localStorage.setItem('eaten_pro', currentEaten.pro + currentSuggestion.pro);
-            localStorage.setItem('eaten_carb', currentEaten.carb + currentSuggestion.carb);
-            localStorage.setItem('eaten_fat', currentEaten.fat + currentSuggestion.fat);
+        function eatOption(index) {
+            const opt = generatedOptions[index];
+            
+            localStorage.setItem('eaten_kcal', currentEaten.kcal + opt.kcal);
+            localStorage.setItem('eaten_pro', currentEaten.pro + opt.pro);
+            localStorage.setItem('eaten_carb', currentEaten.carb + opt.carb);
+            localStorage.setItem('eaten_fat', currentEaten.fat + opt.fat);
             
             let history = JSON.parse(localStorage.getItem('food_history')) || [];
             history.push({
-                name: currentSuggestion.name,
-                kcal: currentSuggestion.kcal,
-                pro: currentSuggestion.pro,
-                carb: currentSuggestion.carb,
-                fat: currentSuggestion.fat
+                name: opt.title + ": " + opt.name,
+                kcal: opt.kcal,
+                pro: opt.pro,
+                carb: opt.carb,
+                fat: opt.fat
             });
             localStorage.setItem('food_history', JSON.stringify(history));
 
@@ -408,7 +393,7 @@
         function openMealBrain() { 
             document.getElementById('mealModal').style.display = 'flex'; 
             setTimeout(() => document.getElementById('mealModal').style.opacity = '1', 10);
-            calculateBrain();  
+            generateMeals();  
         }
         function closeModal(id) { 
             const modal = document.getElementById(id); 
