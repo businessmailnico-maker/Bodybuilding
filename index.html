@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nutrition Tracker</title>
+    <style>
+        :root {
+            --bg-color: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text-main: #000000;
+            --text-muted: #8A8A8E;
+            --accent: #007AFF; 
+            --protein: #FF2D55; 
+            --carbs: #FF9500; 
+            --fats: #FFCC00; 
+            --electro: #34C759; 
+            --warning: #FF9500;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 20px; }
+        h1 { font-size: 34px; font-weight: 700; margin: 0; }
+        .btn-settings { color: var(--accent); font-size: 16px; font-weight: 600; background: none; border: none; cursor: pointer; }
+
+        .card { background-color: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+
+        .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .macro-box { background-color: var(--card-bg); border-radius: 14px; padding: 16px 12px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; }
+
+        .macro-title { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; text-transform: uppercase; }
+        .macro-value { font-size: 22px; font-weight: 700; }
+        
+        .val-protein { color: var(--protein); }
+        .val-carbs { color: var(--carbs); }
+        .val-fats { color: var(--fats); }
+        .val-electro { color: var(--electro); }
+
+        .progress-bar-bg { background-color: var(--bg-color); height: 8px; border-radius: 4px; width: 100%; margin-top: 8px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+
+        .btn-add { background-color: var(--accent); color: white; font-size: 17px; font-weight: 600; width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.2s; }
+        .modal { background: var(--card-bg); width: 85%; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .modal h2 { margin-top: 0; font-size: 20px; margin-bottom: 20px; text-align: center; }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
+        .input-group input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #E5E5EA; border-radius: 10px; font-size: 16px; background: var(--bg-color); }
+
+        #macro-check { font-size: 14px; font-weight: 600; text-align: center; margin-bottom: 16px; padding: 10px; border-radius: 8px; background-color: var(--bg-color); }
+
+        .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
+        .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Heute</h1>
+        <button class="btn-settings" onclick="openModal()">Ziele anpassen</button>
+    </div>
+
+    <div class="card">
+        <h2 style="margin: 0; font-size: 15px; color: var(--text-muted); text-transform: uppercase;">Verbleibend</h2>
+        <div style="font-size: 38px; font-weight: 700; margin: 4px 0;"><span id="display-kcal-left">0</span> <span style="font-size: 20px; color: var(--text-muted); font-weight: 500;">kcal</span></div>
+        <div style="font-size: 14px; color: var(--text-muted);">Ziel: <span id="display-kcal-goal">0</span> kcal • Gegessen: <span id="display-kcal-eaten">1560</span> kcal</div>
+    </div>
+
+    <div class="macro-grid">
+        <div class="macro-box">
+            <div class="macro-title">Protein</div>
+            <div class="macro-value val-protein"><span id="display-pro-eaten">110</span>g</div>
+            <div class="progress-bar-bg"><div id="bar-pro" class="progress-fill" style="background-color: var(--protein);"></div></div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">von <span id="display-pro-goal">0</span>g</div>
+        </div>
+        <div class="macro-box">
+            <div class="macro-title">Carbs</div>
+            <div class="macro-value val-carbs"><span id="display-carb-eaten">140</span>g</div>
+            <div class="progress-bar-bg"><div id="bar-carb" class="progress-fill" style="background-color: var(--carbs);"></div></div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">von <span id="display-carb-goal">0</span>g</div>
+        </div>
+        <div class="macro-box">
+            <div class="macro-title">Fett</div>
+            <div class="macro-value val-fats"><span id="display-fat-eaten">60</span>g</div>
+            <div class="progress-bar-bg"><div id="bar-fat" class="progress-fill" style="background-color: var(--fats);"></div></div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">von <span id="display-fat-goal">0</span>g</div>
+        </div>
+    </div>
+
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 style="margin:0; font-size: 20px;">Elektrolyte</h2>
+            <div style="font-size: 14px; color: var(--text-muted);">Natrium & Kalium Balance</div>
+        </div>
+        <div class="macro-value val-electro">Gut</div>
+    </div>
+
+    <button class="btn-add" onclick="alert('Als Nächstes bauen wir die Eingabe für deine Mahlzeiten!')">
+        + Mahlzeit hinzufügen
+    </button>
+
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>Deine Tagesziele</h2>
+            
+            <div id="macro-check">Überprüfe Werte...</div>
+
+            <div class="input-group">
+                <label>Kalorien Ziel (kcal)</label>
+                <input type="number" id="input-goal-kcal" oninput="validateMacros()">
+            </div>
+            <div class="input-group">
+                <label>Protein (g)</label>
+                <input type="number" id="input-goal-pro" oninput="validateMacros()">
+            </div>
+            <div class="input-group">
+                <label>Kohlenhydrate (g)</label>
+                <input type="number" id="input-goal-carb" oninput="validateMacros()">
+            </div>
+            <div class="input-group">
+                <label>Fett (g)</label>
+                <input type="number" id="input-goal-fat" oninput="validateMacros()">
+            </div>
+
+            <button class="btn-save" onclick="saveGoals()">Speichern</button>
+            <button class="btn-cancel" onclick="closeModal()">Abbrechen</button>
+        </div>
+    </div>
+
+    <script>
+        const eaten = { kcal: 1560, pro: 110, carb: 140, fat: 60 };
+        const defaultGoals = { kcal: 2800, pro: 180, carb: 350, fat: 80 };
+
+        function loadData() {
+            const goals = {
+                kcal: localStorage.getItem('goal_kcal') || defaultGoals.kcal,
+                pro: localStorage.getItem('goal_pro') || defaultGoals.pro,
+                carb: localStorage.getItem('goal_carb') || defaultGoals.carb,
+                fat: localStorage.getItem('goal_fat') || defaultGoals.fat
+            };
+
+            document.getElementById('display-kcal-goal').innerText = goals.kcal;
+            document.getElementById('display-kcal-left').innerText = Math.max(0, goals.kcal - eaten.kcal);
+            document.getElementById('display-pro-goal').innerText = goals.pro;
+            document.getElementById('display-carb-goal').innerText = goals.carb;
+            document.getElementById('display-fat-goal').innerText = goals.fat;
+
+            document.getElementById('bar-pro').style.width = Math.min(100, (eaten.pro / goals.pro) * 100) + '%';
+            document.getElementById('bar-carb').style.width = Math.min(100, (eaten.carb / goals.carb) * 100) + '%';
+            document.getElementById('bar-fat').style.width = Math.min(100, (eaten.fat / goals.fat) * 100) + '%';
+
+            document.getElementById('input-goal-kcal').value = goals.kcal;
+            document.getElementById('input-goal-pro').value = goals.pro;
+            document.getElementById('input-goal-carb').value = goals.carb;
+            document.getElementById('input-goal-fat').value = goals.fat;
+            
+            validateMacros();
+        }
+
+        function validateMacros() {
+            const kcal = parseInt(document.getElementById('input-goal-kcal').value) || 0;
+            const pro = parseInt(document.getElementById('input-goal-pro').value) || 0;
+            const carb = parseInt(document.getElementById('input-goal-carb').value) || 0;
+            const fat = parseInt(document.getElementById('input-goal-fat').value) || 0;
+
+            const calculatedKcal = (pro * 4) + (carb * 4) + (fat * 9);
+            const diff = Math.abs(kcal - calculatedKcal);
+            const checkDiv = document.getElementById('macro-check');
+
+            if (diff > 10) {
+                checkDiv.innerHTML = `⚠️ Makros ergeben ${calculatedKcal} kcal. Das passt nicht zum Ziel!`;
+                checkDiv.style.color = 'var(--warning)';
+            } else {
+                checkDiv.innerHTML = `✅ Makros ergeben ${calculatedKcal} kcal. Passt!`;
+                checkDiv.style.color = 'var(--electro)';
+            }
+        }
+
+        function openModal() {
+            const modal = document.getElementById('settingsModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.style.opacity = '1', 10);
+            validateMacros();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('settingsModal');
+            modal.style.opacity = '0';
+            setTimeout(() => modal.style.display = 'none', 200);
+        }
+
+        function saveGoals() {
+            localStorage.setItem('goal_kcal', document.getElementById('input-goal-kcal').value);
+            localStorage.setItem('goal_pro', document.getElementById('input-goal-pro').value);
+            localStorage.setItem('goal_carb', document.getElementById('input-goal-carb').value);
+            localStorage.setItem('goal_fat', document.getElementById('input-goal-fat').value);
+            
+            loadData();
+            closeModal();
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
