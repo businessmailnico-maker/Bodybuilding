@@ -18,7 +18,7 @@
             --danger: #FF3B30;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 40px; -webkit-font-smoothing: antialiased; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 40px; -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 20px; }
         h1 { font-size: 34px; font-weight: 700; margin: 0; }
         .btn-settings { color: var(--accent); font-size: 16px; font-weight: 600; background: none; border: none; cursor: pointer; padding: 0; }
@@ -48,19 +48,15 @@
         /* Edit View Styling */
         #edit-meal-macros { background: var(--bg-color); padding: 14px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-size: 14px; font-weight: 500; line-height: 1.6; }
         .edit-input-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #E5E5EA; }
-        
-        /* Das neue Dropdown für den Austausch */
         .edit-swap-select { border: 1px solid #E5E5EA; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--bg-color); color: var(--accent); padding: 8px; width: 140px; text-overflow: ellipsis; appearance: none; -webkit-appearance: none; cursor: pointer; }
-        
         .edit-input-wrapper { display: flex; align-items: center; }
         .edit-input-wrapper input { width: 65px; padding: 8px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--text-main); margin-right: 8px; }
 
-        /* Slider Styling für Settings */
+        /* Slider Styling */
         .input-group { margin-bottom: 20px; }
         .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .input-header label { font-size: 15px; font-weight: 500; margin: 0; }
         .input-header input[type=number] { width: 70px; padding: 6px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--accent); }
-        
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; margin-top: -10px; }
@@ -73,8 +69,10 @@
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; }
 
-        /* Historie Styling */
-        .history-card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        /* Historie Styling (Swipe) */
+        .history-item-container { position: relative; margin-bottom: 12px; border-radius: 14px; overflow: hidden; background: var(--danger); }
+        .history-card { background: var(--card-bg); padding: 16px; position: relative; z-index: 2; transition: transform 0.2s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-radius: 14px; }
+        .history-delete-btn { position: absolute; top: 0; right: 0; bottom: 0; width: 80px; background: var(--danger); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; z-index: 1; }
         .history-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; line-height: 1.4;}
         .history-macros { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); font-weight: 500; }
         .history-empty { text-align: center; color: var(--text-muted); font-size: 15px; margin-top: 20px; font-style: italic; }
@@ -87,6 +85,7 @@
         <button class="btn-settings" onclick="openSettings()">Ziele anpassen</button>
     </div>
 
+    <!-- Main Dashboard -->
     <div class="card">
         <h2 style="margin: 0; font-size: 15px; color: var(--text-muted); text-transform: uppercase;">Verbleibend</h2>
         <div style="font-size: 38px; font-weight: 700; margin: 4px 0;"><span id="display-kcal-left">0</span> <span style="font-size: 20px; color: var(--text-muted); font-weight: 500;">kcal</span></div>
@@ -116,28 +115,35 @@
 
     <button class="btn-add" onclick="openMealBrain()">+ Mahlzeit hinzufügen</button>
 
-    <h2 style="font-size: 20px; margin-bottom: 12px;">Gegessen</h2>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+        <h2 style="font-size: 20px; margin: 0;">Gegessen</h2>
+        <span style="font-size: 11px; color: var(--text-muted);">Wischen zum Löschen • Halten zum Ändern</span>
+    </div>
+    
     <div id="history-list"></div>
 
+    <!-- Vorschläge Modal -->
     <div class="modal-overlay" id="mealModal">
         <div class="modal">
             <h2>Vorschläge</h2>
-            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Auf ~700 kcal für dich skaliert:</p>
+            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Auf ~750 kcal für dich skaliert:</p>
             <div id="options-container"></div>
             <button class="btn-cancel" style="margin-top: 10px;" onclick="closeModal('mealModal')">Abbrechen</button>
         </div>
     </div>
 
+    <!-- Edit View Modal -->
     <div class="modal-overlay" id="editModal">
         <div class="modal">
             <h2 id="edit-meal-title">Mahlzeit anpassen</h2>
             <div id="edit-meal-macros"></div>
             <div id="edit-meal-inputs"></div>
             <button class="btn-save" onclick="saveEditedMeal()">Speichern & Essen</button>
-            <button class="btn-cancel" onclick="backToBrain()">Zurück</button>
+            <button class="btn-cancel" onclick="closeModal('editModal')">Abbrechen</button>
         </div>
     </div>
 
+    <!-- Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>Einstellungen</h2>
@@ -171,22 +177,28 @@
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0 };
         let generatedOptions = []; 
         let currentEditMeal = null; 
+        let editingHistoryIndex = -1; // -1 = Neu, ansonsten Index in Historie
 
-        // Die kategorisierte Datenbank
+        // Datenbank mit Schlemmerfilets
         const db = {
+            // Proteine
             skyr: { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65, cat: 'pro' },
             putenhack: { n: "Putenhack", p: 0.20, c: 0.00, f: 0.05, k: 1.25, cat: 'pro' },
             magerquark: { n: "Magerquark", p: 0.12, c: 0.04, f: 0.002, k: 0.68, cat: 'pro' },
             whey_dm: { n: "Whey (DM Sportness)", p: 0.80, c: 0.05, f: 0.05, k: 3.85, cat: 'pro' },
             whey_bulk: { n: "Whey (Bulk)", p: 0.75, c: 0.08, f: 0.06, k: 3.86, cat: 'pro' },
             eier: { n: "Eier (M/L)", p: 0.13, c: 0.01, f: 0.11, k: 1.55, cat: 'pro' },
+            sf_spinat: { n: "Schlemmerfilet Spinat", p: 0.11, c: 0.04, f: 0.06, k: 1.15, cat: 'pro' },
+            sf_brokkoli: { n: "Schlemmerfilet Brokkoli", p: 0.12, c: 0.04, f: 0.055, k: 1.15, cat: 'pro' },
             
+            // Kohlenhydrate
             reis: { n: "Reis (Jasmin, roh)", p: 0.08, c: 0.78, f: 0.01, k: 3.53, cat: 'carb' },
             kartoffeln: { n: "Kartoffeln (roh)", p: 0.02, c: 0.15, f: 0.001, k: 0.70, cat: 'carb' },
             haferflocken: { n: "Haferflocken", p: 0.135, c: 0.59, f: 0.07, k: 3.70, cat: 'carb' },
             maiswaffeln: { n: "Maiswaffeln (DM)", p: 0.08, c: 0.80, f: 0.01, k: 3.61, cat: 'carb' },
             tk_gemuese: { n: "TK Gemüse", p: 0.025, c: 0.04, f: 0.005, k: 0.30, cat: 'carb' },
             
+            // Fette
             butter: { n: "Butter", p: 0.01, c: 0.01, f: 0.82, k: 7.40, cat: 'fat' },
             olivenoel: { n: "Olivenöl", p: 0.00, c: 0.00, f: 1.00, k: 9.00, cat: 'fat' },
             chiasamen: { n: "Chiasamen", p: 0.17, c: 0.05, f: 0.31, k: 4.86, cat: 'fat' },
@@ -195,9 +207,7 @@
             gouda: { n: "Gouda Light", p: 0.30, c: 0.00, f: 0.17, k: 2.73, cat: 'fat' }
         };
 
-        function round(val, step) {
-            return Math.max(0, Math.round(val / step) * step);
-        }
+        function round(val, step) { return Math.max(0, Math.round(val / step) * step); }
 
         function loadData() {
             const goals = {
@@ -240,6 +250,107 @@
             loadHistory();
         }
 
+        // --- Swipe & Touch Logic ---
+        let startX = 0, currentX = 0, swipingIndex = -1, isScrolling = false;
+        let pressTimer = null;
+
+        function hTouchStart(e, index) {
+            startX = e.touches[0].clientX;
+            currentX = startX;
+            swipingIndex = index;
+            isScrolling = false;
+            
+            // Long Press Setup
+            pressTimer = setTimeout(() => {
+                if(!isScrolling && Math.abs(currentX - startX) < 10) {
+                    editHistoryItem(index);
+                }
+            }, 500); // 500ms halten
+        }
+
+        function hTouchMove(e, index) {
+            if(swipingIndex !== index) return;
+            currentX = e.touches[0].clientX;
+            let diffX = currentX - startX;
+
+            if(Math.abs(diffX) > 10) {
+                clearTimeout(pressTimer); // Cancel hold
+                isScrolling = true;
+            }
+
+            if(diffX < 0 && Math.abs(diffX) > 15) { 
+                let el = document.getElementById(`hist-card-${index}`);
+                let move = Math.max(-85, diffX);
+                el.style.transform = `translateX(${move}px)`;
+            }
+        }
+
+        function hTouchEnd(e, index) {
+            clearTimeout(pressTimer);
+            if(swipingIndex !== index) return;
+            let diffX = currentX - startX;
+            let el = document.getElementById(`hist-card-${index}`);
+            
+            if(diffX < -45) {
+                el.style.transform = `translateX(-80px)`; // offen lassen
+            } else {
+                el.style.transform = `translateX(0px)`; // zurückschnappen
+            }
+            swipingIndex = -1;
+        }
+
+        function deleteHistoryItem(index) {
+            let history = JSON.parse(localStorage.getItem('food_history')) || [];
+            let item = history[index];
+            
+            // Abziehen
+            localStorage.setItem('eaten_kcal', Math.max(0, currentEaten.kcal - item.kcal));
+            localStorage.setItem('eaten_pro', Math.max(0, currentEaten.pro - item.pro));
+            localStorage.setItem('eaten_carb', Math.max(0, currentEaten.carb - item.carb));
+            localStorage.setItem('eaten_fat', Math.max(0, currentEaten.fat - item.fat));
+
+            history.splice(index, 1);
+            localStorage.setItem('food_history', JSON.stringify(history));
+            loadData();
+        }
+
+        function editHistoryItem(index) {
+            let history = JSON.parse(localStorage.getItem('food_history')) || [];
+            let item = history[index];
+            
+            if(!item.items) {
+                alert("Diese alte Mahlzeit kann leider nicht mehr bearbeitet werden, da sie mit einer älteren Version gespeichert wurde. Du kannst sie aber löschen.");
+                return;
+            }
+
+            editingHistoryIndex = index;
+            currentEditMeal = JSON.parse(JSON.stringify(item));
+            
+            document.getElementById('edit-meal-title').innerText = currentEditMeal.title || "Mahlzeit anpassen";
+            let inputsHtml = '';
+            
+            currentEditMeal.items.forEach((iObj, i) => {
+                let cat = db[iObj.id].cat;
+                inputsHtml += `
+                    <div class="edit-input-group">
+                        <select class="edit-swap-select" onchange="swapEditItem(${i}, this.value)">
+                            ${getOptionsForCategory(cat, iObj.id)}
+                        </select>
+                        <div class="edit-input-wrapper">
+                            <input type="number" value="${iObj.grams}" oninput="updateEditItem(${i}, this.value)">
+                            <span style="color: var(--text-muted); font-size:15px;">g</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('edit-meal-inputs').innerHTML = inputsHtml;
+            updateEditMacros(); 
+            
+            document.getElementById('editModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('editModal').style.opacity = '1', 10);
+        }
+
         function loadHistory() {
             let history = JSON.parse(localStorage.getItem('food_history')) || [];
             const container = document.getElementById('history-list');
@@ -247,18 +358,23 @@
             if(history.length === 0) {
                 container.innerHTML = '<div class="history-empty">Du hast heute noch nichts eingetragen.</div>';
             } else {
-                container.innerHTML = history.reverse().map(item => `
-                    <div class="history-card">
-                        <div class="history-title">${item.name}</div>
-                        <div class="history-macros">
-                            <span>🔥 ${item.kcal} kcal</span>
-                            <span style="color: var(--protein)">🥩 ${item.pro}g</span>
-                            <span style="color: var(--carbs)">🍚 ${item.carb}g</span>
-                            <span style="color: var(--fats)">🥑 ${item.fat}g</span>
+                container.innerHTML = history.map((item, index) => `
+                    <div class="history-item-container">
+                        <div class="history-delete-btn" onclick="deleteHistoryItem(${index})">Löschen</div>
+                        <div class="history-card" id="hist-card-${index}" 
+                             ontouchstart="hTouchStart(event, ${index})" 
+                             ontouchmove="hTouchMove(event, ${index})" 
+                             ontouchend="hTouchEnd(event, ${index})">
+                            <div class="history-title">${item.name}</div>
+                            <div class="history-macros">
+                                <span>🔥 ${item.kcal} kcal</span>
+                                <span style="color: var(--protein)">🥩 ${item.pro}g</span>
+                                <span style="color: var(--carbs)">🍚 ${item.carb}g</span>
+                                <span style="color: var(--fats)">🥑 ${item.fat}g</span>
+                            </div>
                         </div>
                     </div>
-                `).join('');
-                history.reverse();
+                `).reverse().join('');
             }
         }
 
@@ -267,7 +383,6 @@
             const sliderEl = document.getElementById(`slider-goal-${macro}`);
             if (source === 'slider') { inputEl.value = sliderEl.value; } 
             else { sliderEl.value = inputEl.value; }
-            
             const pro = parseInt(document.getElementById('input-goal-pro').value) || 0;
             const carb = parseInt(document.getElementById('input-goal-carb').value) || 0;
             const fat = parseInt(document.getElementById('input-goal-fat').value) || 0;
@@ -301,7 +416,7 @@
                 return;
             }
 
-            // OPTION 1: Herzhaft (Putenhack, Reis, TK Gemüse, Olivenöl)
+            // OPTION 1: Herzhaft
             let o1_g_gemuese = (mealCarb > 10 && mealPro > 5) ? 150 : 0; 
             let o1_c_left = Math.max(0, mealCarb - (o1_g_gemuese * db.tk_gemuese.c));
             let o1_g_reis = round(o1_c_left / db.reis.c, 5); 
@@ -320,7 +435,7 @@
 
             if(o1_items.length > 0) generatedOptions.push({ title: "Herzhaftes Menü", items: o1_items });
 
-            // OPTION 2: Süß (Skyr, Haferflocken, Chiasamen)
+            // OPTION 2: Süß
             let o2_g_chia = round(Math.min(25, mealFat / db.chiasamen.f), 5); 
             let o2_c_left = Math.max(0, mealCarb - (o2_g_chia * db.chiasamen.c));
             let o2_g_oats = round(o2_c_left / db.haferflocken.c, 5); 
@@ -357,7 +472,7 @@
                             <span style="color: var(--carbs)">🍚 ${Math.round(previewCarb)}g</span>
                             <span style="color: var(--fats)">🥑 ${Math.round(previewFat)}g</span>
                         </div>
-                        <button class="btn-eat-option" onclick="openEditMeal(${index})">Anpassen & Essen</button>
+                        <button class="btn-eat-option" onclick="openNewEditMeal(${index})">Anpassen & Essen</button>
                     </div>`;
                 }).join('');
             }
@@ -374,7 +489,8 @@
             return options;
         }
 
-        function openEditMeal(index) {
+        function openNewEditMeal(index) {
+            editingHistoryIndex = -1; // Flag für "Neues Menü"
             closeModal('mealModal'); 
             currentEditMeal = JSON.parse(JSON.stringify(generatedOptions[index])); 
             
@@ -382,7 +498,7 @@
             let inputsHtml = '';
             
             currentEditMeal.items.forEach((item, i) => {
-                let cat = db[item.id].cat; // Kategorie holen (pro, carb, fat)
+                let cat = db[item.id].cat;
                 inputsHtml += `
                     <div class="edit-input-group">
                         <select class="edit-swap-select" onchange="swapEditItem(${i}, this.value)">
@@ -444,15 +560,34 @@
             let nameString = validItems.map(i => `${i.grams}g ${i.name}`).join(" + ");
             let finalName = currentEditMeal.title + ": " + nameString;
 
-            localStorage.setItem('eaten_kcal', currentEaten.kcal + currentEditMeal.kcal);
-            localStorage.setItem('eaten_pro', currentEaten.pro + currentEditMeal.pro);
-            localStorage.setItem('eaten_carb', currentEaten.carb + currentEditMeal.carb);
-            localStorage.setItem('eaten_fat', currentEaten.fat + currentEditMeal.fat);
-            
             let history = JSON.parse(localStorage.getItem('food_history')) || [];
-            history.push({ name: finalName, kcal: currentEditMeal.kcal, pro: currentEditMeal.pro, carb: currentEditMeal.carb, fat: currentEditMeal.fat });
-            localStorage.setItem('food_history', JSON.stringify(history));
 
+            if(editingHistoryIndex >= 0) {
+                // Bearbeiten einer alten Mahlzeit
+                let oldItem = history[editingHistoryIndex];
+                
+                // Alte Werte abziehen, neue addieren
+                localStorage.setItem('eaten_kcal', Math.max(0, currentEaten.kcal - oldItem.kcal + currentEditMeal.kcal));
+                localStorage.setItem('eaten_pro', Math.max(0, currentEaten.pro - oldItem.pro + currentEditMeal.pro));
+                localStorage.setItem('eaten_carb', Math.max(0, currentEaten.carb - oldItem.carb + currentEditMeal.carb));
+                localStorage.setItem('eaten_fat', Math.max(0, currentEaten.fat - oldItem.fat + currentEditMeal.fat));
+
+                history[editingHistoryIndex] = { 
+                    name: finalName, title: currentEditMeal.title, kcal: currentEditMeal.kcal, pro: currentEditMeal.pro, carb: currentEditMeal.carb, fat: currentEditMeal.fat, items: validItems 
+                };
+            } else {
+                // Neue Mahlzeit speichern
+                localStorage.setItem('eaten_kcal', currentEaten.kcal + currentEditMeal.kcal);
+                localStorage.setItem('eaten_pro', currentEaten.pro + currentEditMeal.pro);
+                localStorage.setItem('eaten_carb', currentEaten.carb + currentEditMeal.carb);
+                localStorage.setItem('eaten_fat', currentEaten.fat + currentEditMeal.fat);
+                
+                history.push({ 
+                    name: finalName, title: currentEditMeal.title, kcal: currentEditMeal.kcal, pro: currentEditMeal.pro, carb: currentEditMeal.carb, fat: currentEditMeal.fat, items: validItems 
+                });
+            }
+
+            localStorage.setItem('food_history', JSON.stringify(history));
             loadData(); closeModal('editModal');
         }
 
@@ -461,7 +596,6 @@
             localStorage.removeItem('food_history'); loadData(); closeModal('settingsModal');
         }
 
-        function backToBrain() { closeModal('editModal'); setTimeout(openMealBrain, 200); }
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; setTimeout(() => document.getElementById('settingsModal').style.opacity = '1', 10); }
         function openMealBrain() { document.getElementById('mealModal').style.display = 'flex'; setTimeout(() => document.getElementById('mealModal').style.opacity = '1', 10); generateMeals(); }
         function closeModal(id) { const modal = document.getElementById(id); modal.style.opacity = '0'; setTimeout(() => modal.style.display = 'none', 200); }
