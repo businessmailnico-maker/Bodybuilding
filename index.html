@@ -16,10 +16,9 @@
             --fats: #FFCC00; 
             --electro: #34C759; 
             --danger: #FF3B30;
-            --warning: #FF9500;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; -webkit-font-smoothing: antialiased; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 40px; -webkit-font-smoothing: antialiased; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 20px; }
         h1 { font-size: 34px; font-weight: 700; margin: 0; }
         .btn-settings { color: var(--accent); font-size: 16px; font-weight: 600; background: none; border: none; cursor: pointer; padding: 0; }
@@ -32,14 +31,14 @@
         .progress-bar-bg { background-color: var(--bg-color); height: 8px; border-radius: 4px; width: 100%; margin-top: 8px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
         
-        .btn-add { background-color: var(--accent); color: white; font-size: 17px; font-weight: 600; width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); }
+        .btn-add { background-color: var(--accent); color: white; font-size: 17px; font-weight: 600; width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer; margin-top: 10px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); }
         .btn-reset { background-color: var(--bg-color); color: var(--danger); font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 20px; }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.2s; }
         .modal { background: var(--card-bg); width: 85%; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
         .modal h2 { margin-top: 0; font-size: 20px; margin-bottom: 20px; text-align: center; }
         
-        /* Slider Styling (iOS Look) */
+        /* Slider Styling */
         .input-group { margin-bottom: 20px; }
         .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .input-header label { font-size: 15px; font-weight: 500; margin: 0; }
@@ -50,12 +49,11 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; margin-top: -10px; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #E5E5EA; border-radius: 2px; }
         
-        /* Einfärbung der Slider-Tracks (Optionaler Touch) */
         #slider-goal-pro::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--protein) 0%, #E5E5EA 100%); }
         #slider-goal-carb::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--carbs) 0%, #E5E5EA 100%); }
         #slider-goal-fat::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--fats) 0%, #E5E5EA 100%); }
 
-        #macro-check { font-size: 14px; text-align: center; margin-bottom: 24px; padding: 12px; border-radius: 8px; background-color: var(--bg-color); line-height: 1.4; }
+        #macro-check { font-size: 14px; text-align: center; margin-bottom: 24px; padding: 12px; border-radius: 8px; background-color: var(--bg-color); color: var(--electro); font-weight: 600; }
 
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; }
@@ -63,6 +61,12 @@
         .suggestion-box { background: var(--bg-color); padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: center; }
         .food-item { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 8px 0; }
         .food-label { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+
+        /* Historie Styling */
+        .history-card { background: var(--card-bg); border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .history-title { font-weight: 600; font-size: 16px; margin-bottom: 8px; }
+        .history-macros { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .history-empty { text-align: center; color: var(--text-muted); font-size: 15px; margin-top: 20px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -72,6 +76,7 @@
         <button class="btn-settings" onclick="openSettings()">Ziele anpassen</button>
     </div>
 
+    <!-- Main Dashboard -->
     <div class="card">
         <h2 style="margin: 0; font-size: 15px; color: var(--text-muted); text-transform: uppercase;">Verbleibend</h2>
         <div style="font-size: 38px; font-weight: 700; margin: 4px 0;"><span id="display-kcal-left">0</span> <span style="font-size: 20px; color: var(--text-muted); font-weight: 500;">kcal</span></div>
@@ -101,6 +106,11 @@
 
     <button class="btn-add" onclick="openMealBrain()">+ Mahlzeit berechnen</button>
 
+    <!-- Historie -->
+    <h2 style="font-size: 20px; margin-bottom: 12px;">Gegessen</h2>
+    <div id="history-list"></div>
+
+    <!-- Meal Brain Modal -->
     <div class="modal-overlay" id="mealModal">
         <div class="modal">
             <h2>Mahlzeiten-Gehirn</h2>
@@ -111,20 +121,22 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>Einstellungen</h2>
             
-            <div id="macro-check">Werte werden überprüft...</div>
+            <div id="macro-check">✅ Kalorien werden automatisch berechnet</div>
 
+            <!-- Kalorien (Read-only Logik, berechnet sich selbst) -->
             <div class="input-group">
                 <div class="input-header">
                     <label>Kalorien (kcal)</label>
-                    <input type="number" id="input-goal-kcal" oninput="sync('kcal', 'input')">
+                    <input type="number" id="input-goal-kcal" disabled style="background: transparent; border: none; font-size: 20px; color: var(--text-main);">
                 </div>
-                <input type="range" id="slider-goal-kcal" min="1000" max="6000" step="50" oninput="sync('kcal', 'slider')">
             </div>
 
+            <!-- Protein -->
             <div class="input-group">
                 <div class="input-header">
                     <label>Protein (g)</label>
@@ -133,6 +145,7 @@
                 <input type="range" id="slider-goal-pro" min="0" max="400" step="1" oninput="sync('pro', 'slider')">
             </div>
 
+            <!-- Kohlenhydrate -->
             <div class="input-group">
                 <div class="input-header">
                     <label>Kohlenhydrate (g)</label>
@@ -141,6 +154,7 @@
                 <input type="range" id="slider-goal-carb" min="0" max="600" step="1" oninput="sync('carb', 'slider')">
             </div>
 
+            <!-- Fett -->
             <div class="input-group">
                 <div class="input-header">
                     <label>Fett (g)</label>
@@ -158,7 +172,7 @@
     <script>
         const defaultGoals = { kcal: 2800, pro: 180, carb: 350, fat: 80 };
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0 };
-        let currentSuggestion = { kcal: 0, pro: 0, carb: 0, fat: 0 };
+        let currentSuggestion = { name: "", kcal: 0, pro: 0, carb: 0, fat: 0 };
 
         function loadData() {
             const goals = {
@@ -190,56 +204,52 @@
             document.getElementById('bar-carb').style.width = Math.min(100, (currentEaten.carb / goals.carb) * 100) + '%';
             document.getElementById('bar-fat').style.width = Math.min(100, (currentEaten.fat / goals.fat) * 100) + '%';
 
-            // Setze Inputs und Slider
             document.getElementById('input-goal-kcal').value = goals.kcal;
-            document.getElementById('slider-goal-kcal').value = goals.kcal;
-            
             document.getElementById('input-goal-pro').value = goals.pro;
             document.getElementById('slider-goal-pro').value = goals.pro;
-            
             document.getElementById('input-goal-carb').value = goals.carb;
             document.getElementById('slider-goal-carb').value = goals.carb;
-            
             document.getElementById('input-goal-fat').value = goals.fat;
             document.getElementById('slider-goal-fat').value = goals.fat;
 
-            validateMacros();
+            loadHistory();
         }
 
-        // Synchronisiert Slider und Textfeld in Echtzeit
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem('food_history')) || [];
+            const container = document.getElementById('history-list');
+            
+            if(history.length === 0) {
+                container.innerHTML = '<div class="history-empty">Du hast heute noch nichts eingetragen.</div>';
+            } else {
+                container.innerHTML = history.map(item => `
+                    <div class="history-card">
+                        <div class="history-title">${item.name}</div>
+                        <div class="history-macros">
+                            <span>🔥 ${item.kcal} kcal</span>
+                            <span style="color: var(--protein)">🥩 ${item.pro}g</span>
+                            <span style="color: var(--carbs)">🍚 ${item.carb}g</span>
+                            <span style="color: var(--fats)">🥑 ${item.fat}g</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Synchronisiert Slider und berechnet Kalorien automatisch neu
         function sync(macro, source) {
             const inputEl = document.getElementById(`input-goal-${macro}`);
             const sliderEl = document.getElementById(`slider-goal-${macro}`);
             
-            if (source === 'slider') {
-                inputEl.value = sliderEl.value;
-            } else {
-                sliderEl.value = inputEl.value;
-            }
-            validateMacros();
-        }
-
-        function validateMacros() {
-            const kcal = parseInt(document.getElementById('input-goal-kcal').value) || 0;
+            if (source === 'slider') { inputEl.value = sliderEl.value; } 
+            else { sliderEl.value = inputEl.value; }
+            
             const pro = parseInt(document.getElementById('input-goal-pro').value) || 0;
             const carb = parseInt(document.getElementById('input-goal-carb').value) || 0;
             const fat = parseInt(document.getElementById('input-goal-fat').value) || 0;
-
-            const calculatedKcal = (pro * 4) + (carb * 4) + (fat * 9);
-            const diff = kcal - calculatedKcal;
-            const checkDiv = document.getElementById('macro-check');
-
-            if (diff > 10) {
-                const missing = Math.round(diff / 4);
-                const missingFat = Math.round(diff / 9);
-                checkDiv.innerHTML = `⚠️ Makros ergeben <b>${calculatedKcal} kcal</b>.<br><span style="color: var(--warning); font-size: 13px; display: block; margin-top: 4px;">Dir fehlen noch ${diff} kcal zum Ziel.<br>Schieb den Regler für <b>KH/EW um ca. +${missing}g</b> oder <b>Fett um +${missingFat}g</b> nach rechts.</span>`;
-            } else if (diff < -10) {
-                const over = Math.round(Math.abs(diff) / 4);
-                const overFat = Math.round(Math.abs(diff) / 9);
-                checkDiv.innerHTML = `⚠️ Makros ergeben <b>${calculatedKcal} kcal</b>.<br><span style="color: var(--danger); font-size: 13px; display: block; margin-top: 4px;">Das sind ${Math.abs(diff)} kcal zu viel!<br>Schieb den Regler für <b>KH/EW um ca. -${over}g</b> oder <b>Fett um -${overFat}g</b> nach links.</span>`;
-            } else {
-                checkDiv.innerHTML = `✅ Makros ergeben exakt <b>${calculatedKcal} kcal</b>.<br><span style="color: var(--electro); font-size: 13px; display: block; margin-top: 4px;">Perfekt ausbalanciert!</span>`;
-            }
+            
+            const autoKcal = (pro * 4) + (carb * 4) + (fat * 9);
+            document.getElementById('input-goal-kcal').value = autoKcal;
         }
 
         function calculateBrain() {
@@ -276,6 +286,7 @@
             g_oats = Math.round(g_oats);
 
             currentSuggestion = {
+                name: "Skyr & Haferflocken",
                 pro: Math.round(g_skyr * skyr.p + g_oats * oats.p),
                 carb: Math.round(g_skyr * skyr.c + g_oats * oats.c),
                 fat: Math.round(g_skyr * skyr.f + g_oats * oats.f),
@@ -292,11 +303,23 @@
         }
 
         function eatSuggestion() {
+            // Werte addieren
             localStorage.setItem('eaten_kcal', currentEaten.kcal + currentSuggestion.kcal);
             localStorage.setItem('eaten_pro', currentEaten.pro + currentSuggestion.pro);
             localStorage.setItem('eaten_carb', currentEaten.carb + currentSuggestion.carb);
             localStorage.setItem('eaten_fat', currentEaten.fat + currentSuggestion.fat);
             
+            // In Historie speichern
+            let history = JSON.parse(localStorage.getItem('food_history')) || [];
+            history.push({
+                name: currentSuggestion.name,
+                kcal: currentSuggestion.kcal,
+                pro: currentSuggestion.pro,
+                carb: currentSuggestion.carb,
+                fat: currentSuggestion.fat
+            });
+            localStorage.setItem('food_history', JSON.stringify(history));
+
             loadData();
             closeModal('mealModal');
         }
@@ -306,6 +329,7 @@
             localStorage.setItem('eaten_pro', 0);
             localStorage.setItem('eaten_carb', 0);
             localStorage.setItem('eaten_fat', 0);
+            localStorage.removeItem('food_history');
             loadData();
             closeModal('settingsModal');
         }
@@ -313,7 +337,6 @@
         function openSettings() { 
             document.getElementById('settingsModal').style.display = 'flex'; 
             setTimeout(() => document.getElementById('settingsModal').style.opacity = '1', 10); 
-            validateMacros(); 
         }
         function openMealBrain() { 
             calculateBrain(); 
