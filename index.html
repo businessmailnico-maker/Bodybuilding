@@ -39,11 +39,23 @@
         .modal { background: var(--card-bg); width: 85%; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
         .modal h2 { margin-top: 0; font-size: 20px; margin-bottom: 20px; text-align: center; }
         
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 14px; color: var(--text-muted); margin-bottom: 6px; }
-        .input-group input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #E5E5EA; border-radius: 10px; font-size: 16px; background: var(--bg-color); }
+        /* Slider Styling (iOS Look) */
+        .input-group { margin-bottom: 20px; }
+        .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .input-header label { font-size: 15px; font-weight: 500; margin: 0; }
+        .input-header input[type=number] { width: 70px; padding: 6px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--accent); }
         
-        #macro-check { font-size: 14px; text-align: center; margin-bottom: 16px; padding: 12px; border-radius: 8px; background-color: var(--bg-color); line-height: 1.4; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; margin-top: -10px; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #E5E5EA; border-radius: 2px; }
+        
+        /* Einfärbung der Slider-Tracks (Optionaler Touch) */
+        #slider-goal-pro::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--protein) 0%, #E5E5EA 100%); }
+        #slider-goal-carb::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--carbs) 0%, #E5E5EA 100%); }
+        #slider-goal-fat::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--fats) 0%, #E5E5EA 100%); }
+
+        #macro-check { font-size: 14px; text-align: center; margin-bottom: 24px; padding: 12px; border-radius: 8px; background-color: var(--bg-color); line-height: 1.4; }
 
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; }
@@ -60,14 +72,12 @@
         <button class="btn-settings" onclick="openSettings()">Ziele anpassen</button>
     </div>
 
-    <!-- Kalorien Übersicht -->
     <div class="card">
         <h2 style="margin: 0; font-size: 15px; color: var(--text-muted); text-transform: uppercase;">Verbleibend</h2>
         <div style="font-size: 38px; font-weight: 700; margin: 4px 0;"><span id="display-kcal-left">0</span> <span style="font-size: 20px; color: var(--text-muted); font-weight: 500;">kcal</span></div>
         <div style="font-size: 14px; color: var(--text-muted);">Ziel: <span id="display-kcal-goal">0</span> kcal • Gegessen: <span id="display-kcal-eaten">0</span> kcal</div>
     </div>
 
-    <!-- Makro Verteilung -->
     <div class="macro-grid">
         <div class="macro-box">
             <div class="macro-title">Protein</div>
@@ -91,32 +101,53 @@
 
     <button class="btn-add" onclick="openMealBrain()">+ Mahlzeit berechnen</button>
 
-    <!-- Meal Brain Modal -->
     <div class="modal-overlay" id="mealModal">
         <div class="modal">
             <h2>Mahlzeiten-Gehirn</h2>
             <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Um deine restlichen Makros zu füllen, brauchst du:</p>
-            
-            <div class="suggestion-box" id="suggestion-content">
-                <!-- Wird per JS befüllt -->
-            </div>
-
+            <div class="suggestion-box" id="suggestion-content"></div>
             <button class="btn-save" onclick="eatSuggestion()" id="btn-eat">Das esse ich jetzt!</button>
             <button class="btn-cancel" onclick="closeModal('mealModal')">Abbrechen</button>
         </div>
     </div>
 
-    <!-- Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>Einstellungen</h2>
             
             <div id="macro-check">Werte werden überprüft...</div>
 
-            <div class="input-group"><label>Kalorien (kcal)</label><input type="number" id="input-goal-kcal" oninput="validateMacros()"></div>
-            <div class="input-group"><label>Protein (g)</label><input type="number" id="input-goal-pro" oninput="validateMacros()"></div>
-            <div class="input-group"><label>Kohlenhydrate (g)</label><input type="number" id="input-goal-carb" oninput="validateMacros()"></div>
-            <div class="input-group"><label>Fett (g)</label><input type="number" id="input-goal-fat" oninput="validateMacros()"></div>
+            <div class="input-group">
+                <div class="input-header">
+                    <label>Kalorien (kcal)</label>
+                    <input type="number" id="input-goal-kcal" oninput="sync('kcal', 'input')">
+                </div>
+                <input type="range" id="slider-goal-kcal" min="1000" max="6000" step="50" oninput="sync('kcal', 'slider')">
+            </div>
+
+            <div class="input-group">
+                <div class="input-header">
+                    <label>Protein (g)</label>
+                    <input type="number" id="input-goal-pro" oninput="sync('pro', 'input')">
+                </div>
+                <input type="range" id="slider-goal-pro" min="0" max="400" step="1" oninput="sync('pro', 'slider')">
+            </div>
+
+            <div class="input-group">
+                <div class="input-header">
+                    <label>Kohlenhydrate (g)</label>
+                    <input type="number" id="input-goal-carb" oninput="sync('carb', 'input')">
+                </div>
+                <input type="range" id="slider-goal-carb" min="0" max="600" step="1" oninput="sync('carb', 'slider')">
+            </div>
+
+            <div class="input-group">
+                <div class="input-header">
+                    <label>Fett (g)</label>
+                    <input type="number" id="input-goal-fat" oninput="sync('fat', 'input')">
+                </div>
+                <input type="range" id="slider-goal-fat" min="0" max="200" step="1" oninput="sync('fat', 'slider')">
+            </div>
             
             <button class="btn-save" onclick="saveGoals()">Ziele Speichern</button>
             <button class="btn-reset" onclick="resetDay()">Tag auf 0 zurücksetzen</button>
@@ -159,11 +190,32 @@
             document.getElementById('bar-carb').style.width = Math.min(100, (currentEaten.carb / goals.carb) * 100) + '%';
             document.getElementById('bar-fat').style.width = Math.min(100, (currentEaten.fat / goals.fat) * 100) + '%';
 
+            // Setze Inputs und Slider
             document.getElementById('input-goal-kcal').value = goals.kcal;
+            document.getElementById('slider-goal-kcal').value = goals.kcal;
+            
             document.getElementById('input-goal-pro').value = goals.pro;
+            document.getElementById('slider-goal-pro').value = goals.pro;
+            
             document.getElementById('input-goal-carb').value = goals.carb;
+            document.getElementById('slider-goal-carb').value = goals.carb;
+            
             document.getElementById('input-goal-fat').value = goals.fat;
+            document.getElementById('slider-goal-fat').value = goals.fat;
 
+            validateMacros();
+        }
+
+        // Synchronisiert Slider und Textfeld in Echtzeit
+        function sync(macro, source) {
+            const inputEl = document.getElementById(`input-goal-${macro}`);
+            const sliderEl = document.getElementById(`slider-goal-${macro}`);
+            
+            if (source === 'slider') {
+                inputEl.value = sliderEl.value;
+            } else {
+                sliderEl.value = inputEl.value;
+            }
             validateMacros();
         }
 
@@ -178,14 +230,15 @@
             const checkDiv = document.getElementById('macro-check');
 
             if (diff > 10) {
-                const missingCarbs = Math.round(diff / 4);
+                const missing = Math.round(diff / 4);
                 const missingFat = Math.round(diff / 9);
-                checkDiv.innerHTML = `<span style="color: var(--warning); font-weight:bold;">⚠️ Es fehlen noch ${diff} kcal.</span><br>Füge z.B. <b>${missingCarbs}g Kohlenhydrate/Protein</b> oder <b>${missingFat}g Fett</b> hinzu.`;
+                checkDiv.innerHTML = `⚠️ Makros ergeben <b>${calculatedKcal} kcal</b>.<br><span style="color: var(--warning); font-size: 13px; display: block; margin-top: 4px;">Dir fehlen noch ${diff} kcal zum Ziel.<br>Schieb den Regler für <b>KH/EW um ca. +${missing}g</b> oder <b>Fett um +${missingFat}g</b> nach rechts.</span>`;
             } else if (diff < -10) {
-                const overCarbs = Math.round(Math.abs(diff) / 4);
-                checkDiv.innerHTML = `<span style="color: var(--danger); font-weight:bold;">⚠️ Du bist ${Math.abs(diff)} kcal drüber!</span><br>Reduziere die Makros um z.B. <b>${overCarbs}g Kohlenhydrate/Protein</b>.`;
+                const over = Math.round(Math.abs(diff) / 4);
+                const overFat = Math.round(Math.abs(diff) / 9);
+                checkDiv.innerHTML = `⚠️ Makros ergeben <b>${calculatedKcal} kcal</b>.<br><span style="color: var(--danger); font-size: 13px; display: block; margin-top: 4px;">Das sind ${Math.abs(diff)} kcal zu viel!<br>Schieb den Regler für <b>KH/EW um ca. -${over}g</b> oder <b>Fett um -${overFat}g</b> nach links.</span>`;
             } else {
-                checkDiv.innerHTML = `<span style="color: var(--electro); font-weight:bold;">✅ Perfekt!</span><br>Deine Makros ergeben exakt ${calculatedKcal} kcal.`;
+                checkDiv.innerHTML = `✅ Makros ergeben exakt <b>${calculatedKcal} kcal</b>.<br><span style="color: var(--electro); font-size: 13px; display: block; margin-top: 4px;">Perfekt ausbalanciert!</span>`;
             }
         }
 
