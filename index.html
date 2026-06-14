@@ -23,7 +23,6 @@
 
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 40px; -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none; }
         
-        /* Kalender Header */
         .date-switcher { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 0 10px; position: relative; }
         .date-btn { font-size: 28px; background: none; border: none; color: var(--accent); cursor: pointer; padding: 10px; line-height: 1; }
         .date-display-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
@@ -49,7 +48,6 @@
         .progress-bar-bg { background-color: var(--bg-color); height: 8px; border-radius: 4px; width: 100%; margin-top: 8px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
         
-        /* Water Tracker */
         .btn-water { background: var(--bg-color); color: var(--water); font-size: 15px; font-weight: 600; border: none; border-radius: 10px; padding: 8px 12px; cursor: pointer; transition: opacity 0.2s;}
         .btn-water:active { opacity: 0.5; }
         .water-header { display: flex; justify-content: space-between; align-items: center; }
@@ -104,7 +102,6 @@
         
         .water-log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: 10px; margin-bottom: 8px; font-weight: 600; font-size: 15px;}
         
-        /* Expert Toggle Checkbox Styling */
         .expert-toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--card-bg); border-radius: 12px; border: 1px solid #E5E5EA; margin-top: 16px;}
         .switch { position: relative; display: inline-block; width: 50px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -163,7 +160,6 @@
         </div>
     </div>
 
-    <!-- Experten Dashboard -->
     <div class="macro-grid-expert expert-hidden" id="expert-dashboard">
         <div class="macro-box">
             <div class="macro-title">Natrium</div>
@@ -179,7 +175,6 @@
         </div>
     </div>
 
-    <!-- Wasser Tracker -->
     <div class="card" style="margin-bottom: 16px;">
         <div class="water-header">
             <div style="cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="openWaterSettings()">
@@ -210,7 +205,6 @@
     <div class="modal-overlay" id="mealModal">
         <div class="modal">
             <h2>Vorschläge</h2>
-            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Auf ~750 kcal für dich skaliert:</p>
             <div id="options-container"></div>
             <button class="btn-cancel" style="margin-top: 10px;" onclick="closeModal('mealModal')">Abbrechen</button>
         </div>
@@ -230,7 +224,6 @@
         <div class="modal">
             <h2>App Einstellungen</h2>
             <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px; margin-bottom: 20px;">Passe die App an deine Vorlieben an.</p>
-            
             <div class="edit-input-group" style="padding-bottom: 8px;">
                 <label style="font-size: 14px; color: var(--text-muted); margin-bottom: 6px;">Protein Icon</label>
                 <select class="edit-swap-select" id="sel-emoji-pro">
@@ -249,29 +242,22 @@
                     <option value="🥑">🥑 Avocado</option><option value="🧈">🧈 Butter</option><option value="🥜">🥜 Erdnuss</option>
                 </select>
             </div>
-
             <div class="expert-toggle-container">
                 <div>
                     <div style="font-weight: 600; font-size: 15px;">Expertenmodus</div>
                     <div style="font-size: 12px; color: var(--text-muted);">Natrium & Kalium tracken</div>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="expert-toggle" onchange="toggleExpertMode()">
-                    <span class="slider"></span>
-                </label>
+                <label class="switch"><input type="checkbox" id="expert-toggle" onchange="toggleExpertMode()"><span class="slider"></span></label>
             </div>
-            
             <button class="btn-save" style="margin-top: 20px;" onclick="saveEmojis()">Speichern</button>
             <button class="btn-cancel" onclick="closeModal('emojiModal')">Schließen</button>
         </div>
     </div>
 
-    <!-- Macro Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>Makro Ziele</h2>
             <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top:-15px;">Ziele gelten für alle Tage</p>
-            
             <div class="input-group">
                 <div class="input-header"><label>Kalorien (kcal)</label><input type="number" id="input-goal-kcal" disabled style="background: transparent; border: none; font-size: 20px; color: var(--text-main);"></div>
             </div>
@@ -287,14 +273,8 @@
                 <div class="input-header"><label>Fett (g)</label><input type="number" id="input-goal-fat" oninput="sync('fat', 'input')"></div>
                 <input type="range" id="slider-goal-fat" min="0" max="200" step="1" oninput="sync('fat', 'slider')">
             </div>
-
-            <!-- Expert Settings inside Macro Goals -->
             <div id="expert-settings" class="expert-hidden" style="border-top: 1px solid #E5E5EA; padding-top: 16px; margin-top: 16px;">
-                
-                <button class="btn-calc-expert" onclick="calcElectroGoals()">
-                    <span>⚡ Vaskularitäts-Ziele auto-berechnen</span>
-                </button>
-
+                <button class="btn-calc-expert" onclick="calcElectroGoals()"><span>⚡ Vaskularitäts-Ziele auto-berechnen</span></button>
                 <div class="input-group">
                     <div class="input-header"><label>Natrium (mg)</label><input type="number" id="input-goal-na" oninput="sync('na', 'input')"></div>
                     <input type="range" id="slider-goal-na" min="0" max="10000" step="50" oninput="sync('na', 'slider')">
@@ -304,13 +284,11 @@
                     <input type="range" id="slider-goal-ka" min="0" max="10000" step="50" oninput="sync('ka', 'slider')">
                 </div>
             </div>
-
             <button class="btn-save" onclick="saveGoals()">Ziele Speichern</button>
             <button class="btn-cancel" onclick="closeModal('settingsModal')">Abbrechen</button>
         </div>
     </div>
 
-    <!-- Water Settings Modal -->
     <div class="modal-overlay" id="waterModal">
         <div class="modal">
             <h2>Wasser Einstellungen</h2>
@@ -322,16 +300,11 @@
                 <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px;">Berechnet 1L pro 20kg Gewicht (Aufgerundet).</p>
             </div>
             <div class="input-group">
-                <div class="input-header">
-                    <label>Tagesziel (ml)</label>
-                    <input type="number" id="input-water-goal">
-                </div>
+                <div class="input-header"><label>Tagesziel (ml)</label><input type="number" id="input-water-goal"></div>
             </div>
             <button class="btn-save" onclick="saveWaterSettings()">Speichern</button>
-
             <h3 style="margin-top: 30px; margin-bottom: 12px; font-size: 18px;">Heute getrunken</h3>
             <div id="water-log-container"></div>
-            
             <button class="btn-cancel" style="margin-top: 16px;" onclick="closeModal('waterModal')">Schließen</button>
         </div>
     </div>
@@ -350,11 +323,7 @@
         
         let isExpert = localStorage.getItem('expert_mode') === 'true';
 
-        let emojis = {
-            pro: localStorage.getItem('emoji_pro') || '🥩',
-            carb: localStorage.getItem('emoji_carb') || '🍚',
-            fat: localStorage.getItem('emoji_fat') || '🥑'
-        };
+        let emojis = { pro: localStorage.getItem('emoji_pro') || '🥩', carb: localStorage.getItem('emoji_carb') || '🍚', fat: localStorage.getItem('emoji_fat') || '🥑' };
 
         const db = {
             skyr: { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65, na: 0.4, ka: 1.5, cat: 'pro' },
@@ -370,7 +339,7 @@
             kartoffeln: { n: "Kartoffeln (roh)", p: 0.02, c: 0.15, f: 0.001, k: 0.70, na: 0.02, ka: 4.0, cat: 'carb' },
             haferflocken: { n: "Haferflocken", p: 0.135, c: 0.59, f: 0.07, k: 3.70, na: 0.05, ka: 4.0, cat: 'carb' },
             maiswaffeln: { n: "Maiswaffeln (DM)", p: 0.08, c: 0.80, f: 0.01, k: 3.61, na: 2.5, ka: 1.0, cat: 'carb' },
-            tk_gemuese: { n: "TK Gemüse (Mischung)", p: 0.025, c: 0.04, f: 0.005, k: 0.30, na: 0.15, ka: 3.0, cat: 'carb' },
+            tk_gemuese: { n: "TK Gemüse", p: 0.025, c: 0.04, f: 0.005, k: 0.30, na: 0.15, ka: 3.0, cat: 'carb' },
             
             butter: { n: "Butter", p: 0.01, c: 0.01, f: 0.82, k: 7.40, na: 0.1, ka: 0.2, cat: 'fat' },
             olivenoel: { n: "Olivenöl", p: 0.00, c: 0.00, f: 1.00, k: 9.00, na: 0.02, ka: 0.01, cat: 'fat' },
@@ -387,196 +356,70 @@
         function getKey(base) { return `${base}_${currentDateStr}`; }
         function formatDiff(val) { return val < 0 ? `<span style="color: var(--danger); font-weight: 700;">${val}</span>` : val; }
 
-        function toggleExpertMode() {
-            isExpert = document.getElementById('expert-toggle').checked;
-            localStorage.setItem('expert_mode', isExpert);
-            applyExpertUI();
-        }
-
-        function applyExpertUI() {
-            if(isExpert) {
-                document.getElementById('expert-dashboard').classList.remove('expert-hidden');
-                document.getElementById('expert-settings').classList.remove('expert-hidden');
-            } else {
-                document.getElementById('expert-dashboard').classList.add('expert-hidden');
-                document.getElementById('expert-settings').classList.add('expert-hidden');
-            }
-        }
+        function toggleExpertMode() { isExpert = document.getElementById('expert-toggle').checked; localStorage.setItem('expert_mode', isExpert); applyExpertUI(); }
+        function applyExpertUI() { if(isExpert) { document.getElementById('expert-dashboard').classList.remove('expert-hidden'); document.getElementById('expert-settings').classList.remove('expert-hidden'); } else { document.getElementById('expert-dashboard').classList.add('expert-hidden'); document.getElementById('expert-settings').classList.add('expert-hidden'); } }
 
         function calcElectroGoals() {
             let wStr = localStorage.getItem('user_weight');
-            if(!wStr) {
-                wStr = prompt("Bitte Körpergewicht in kg eingeben (z.B. 70):");
-                if(wStr) {
-                    wStr = wStr.replace(',','.');
-                    localStorage.setItem('user_weight', wStr);
-                } else {
-                    return;
-                }
-            }
-            
-            let weight = parseFloat(wStr);
-            if(isNaN(weight) || weight <= 0) return;
-            
-            // Rechnet die reale Wasser-Faustformel aus (wird auf 100ml gerundet)
+            if(!wStr) { wStr = prompt("Bitte Körpergewicht in kg eingeben (z.B. 70):"); if(wStr) { wStr = wStr.replace(',','.'); localStorage.setItem('user_weight', wStr); } else { return; } }
+            let weight = parseFloat(wStr); if(isNaN(weight) || weight <= 0) return;
             let waterMl = Math.ceil((weight * 50) / 100) * 100; 
-            
-            // Formel: ca. 1300mg Natrium pro Liter Wasser (Gerundet auf 50mg)
             let na = Math.round((waterMl / 1000) * 1300 / 50) * 50; 
-            
-            // Formel: Kalium ist ca 1.15x Natrium (Gerundet auf 50mg)
             let ka = Math.round((na * 1.15) / 50) * 50;
-
-            document.getElementById('input-goal-na').value = na;
-            document.getElementById('slider-goal-na').value = na;
-            document.getElementById('input-goal-ka').value = ka;
-            document.getElementById('slider-goal-ka').value = ka;
-            
+            document.getElementById('input-goal-na').value = na; document.getElementById('slider-goal-na').value = na;
+            document.getElementById('input-goal-ka').value = ka; document.getElementById('slider-goal-ka').value = ka;
             alert(`Gewicht: ${weight}kg\nWasser: ${waterMl/1000} Liter\n\nVaskularitäts-Ziele gesetzt auf:\n🧂 ${na}mg Natrium\n🍌 ${ka}mg Kalium`);
-            
-            // Update the display targets immediately without saving (user still needs to click "Ziele Speichern")
-            sync('na', 'input');
-            sync('ka', 'input');
+            sync('na', 'input'); sync('ka', 'input');
         }
 
         function updateDateDisplay() {
-            let d = currentDateObj.getDate().toString().padStart(2, '0');
-            let m = (currentDateObj.getMonth() + 1).toString().padStart(2, '0');
-            let y = currentDateObj.getFullYear();
-            let dayName = weekdays[currentDateObj.getDay()];
+            let d = currentDateObj.getDate().toString().padStart(2, '0'); let m = (currentDateObj.getMonth() + 1).toString().padStart(2, '0'); let y = currentDateObj.getFullYear(); let dayName = weekdays[currentDateObj.getDay()];
             currentDateStr = `${y}-${m}-${d}`;
-
-            let today = new Date();
-            let isToday = (d === today.getDate().toString().padStart(2, '0') && 
-                           m === (today.getMonth() + 1).toString().padStart(2, '0') && 
-                           y === today.getFullYear().toString());
-
+            let today = new Date(); let isToday = (d === today.getDate().toString().padStart(2, '0') && m === (today.getMonth() + 1).toString().padStart(2, '0') && y === today.getFullYear().toString());
             document.getElementById('display-date').innerText = isToday ? `Heute, ${d}.${m}.` : `${dayName} ${d}.${m}.${y}`;
             document.getElementById('native-date-picker').value = currentDateStr; 
-            
             loadData();
         }
 
         function changeDate(days) { currentDateObj.setDate(currentDateObj.getDate() + days); updateDateDisplay(); }
         function jumpToDate(dateString) { if(!dateString) return; currentDateObj = new Date(dateString); updateDateDisplay(); }
 
-        // --- Water Tracker Logic ---
         let wTimer, wFired = false;
-        function wStart(num) {
-            wFired = false;
-            wTimer = setTimeout(() => {
-                wFired = true;
-                let current = num === 1 ? (localStorage.getItem('water_btn_1') || 250) : (localStorage.getItem('water_btn_2') || 500);
-                let newVal = prompt(`Menge anpassen (ml):`, current);
-                if(newVal && !isNaN(parseInt(newVal))) { localStorage.setItem(`water_btn_${num}`, parseInt(newVal)); loadData(); }
-            }, 500);
-        }
-        function wEnd(num) {
-            clearTimeout(wTimer);
-            if(!wFired) {
-                let amount = num === 1 ? parseInt(localStorage.getItem('water_btn_1')||250) : parseInt(localStorage.getItem('water_btn_2')||500);
-                let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
-                log.push(amount); localStorage.setItem(getKey('water_log'), JSON.stringify(log)); loadData();
-            }
-        }
-
-        function calcWaterGoal() {
-            let wStr = document.getElementById('input-weight').value.replace(',', '.');
-            let w = parseFloat(wStr);
-            if(!isNaN(w) && w > 0) {
-                let rounded = Math.ceil((w * 50) / 100) * 100;
-                document.getElementById('input-water-goal').value = rounded;
-            }
-        }
+        function wStart(num) { wFired = false; wTimer = setTimeout(() => { wFired = true; let current = num === 1 ? (localStorage.getItem('water_btn_1') || 250) : (localStorage.getItem('water_btn_2') || 500); let newVal = prompt(`Menge anpassen (ml):`, current); if(newVal && !isNaN(parseInt(newVal))) { localStorage.setItem(`water_btn_${num}`, parseInt(newVal)); loadData(); } }, 500); }
+        function wEnd(num) { clearTimeout(wTimer); if(!wFired) { let amount = num === 1 ? parseInt(localStorage.getItem('water_btn_1')||250) : parseInt(localStorage.getItem('water_btn_2')||500); let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || []; log.push(amount); localStorage.setItem(getKey('water_log'), JSON.stringify(log)); loadData(); } }
+        function calcWaterGoal() { let wStr = document.getElementById('input-weight').value.replace(',', '.'); let w = parseFloat(wStr); if(!isNaN(w) && w > 0) { document.getElementById('input-water-goal').value = Math.ceil((w * 50) / 100) * 100; } }
 
         function openWaterSettings() {
-            document.getElementById('input-weight').value = localStorage.getItem('user_weight') || '';
-            document.getElementById('input-water-goal').value = localStorage.getItem('water_goal') || 3500;
+            document.getElementById('input-weight').value = localStorage.getItem('user_weight') || ''; document.getElementById('input-water-goal').value = localStorage.getItem('water_goal') || 3500;
             let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
-            let html = log.length === 0 ? '<div class="history-empty">Noch nichts getrunken heute.</div>' : log.map((amount, idx) => `
-                <div class="water-log-item"><span>💧 ${amount} ml</span><button class="btn-remove-ingredient" onclick="deleteWaterLog(${idx})">🗑️</button></div>
-            `).reverse().join('');
+            let html = log.length === 0 ? '<div class="history-empty">Noch nichts getrunken heute.</div>' : log.map((amount, idx) => `<div class="water-log-item"><span>💧 ${amount} ml</span><button class="btn-remove-ingredient" onclick="deleteWaterLog(${idx})">🗑️</button></div>`).reverse().join('');
             document.getElementById('water-log-container').innerHTML = html;
-            document.getElementById('waterModal').style.display = 'flex'; 
-            setTimeout(() => document.getElementById('waterModal').style.opacity = '1', 10);
+            document.getElementById('waterModal').style.display = 'flex'; setTimeout(() => document.getElementById('waterModal').style.opacity = '1', 10);
         }
 
-        function deleteWaterLog(index) {
-            let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
-            let realIndex = log.length - 1 - index;
-            log.splice(realIndex, 1);
-            localStorage.setItem(getKey('water_log'), JSON.stringify(log));
-            loadData(); openWaterSettings();
-        }
-
-        function saveWaterSettings() {
-            localStorage.setItem('user_weight', document.getElementById('input-weight').value);
-            localStorage.setItem('water_goal', document.getElementById('input-water-goal').value);
-            loadData(); closeModal('waterModal');
-        }
+        function deleteWaterLog(index) { let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || []; let realIndex = log.length - 1 - index; log.splice(realIndex, 1); localStorage.setItem(getKey('water_log'), JSON.stringify(log)); loadData(); openWaterSettings(); }
+        function saveWaterSettings() { localStorage.setItem('user_weight', document.getElementById('input-weight').value); localStorage.setItem('water_goal', document.getElementById('input-water-goal').value); loadData(); closeModal('waterModal'); }
 
         function loadData() {
-            const goals = {
-                kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal,
-                pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro,
-                carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb,
-                fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat,
-                na: parseInt(localStorage.getItem('goal_na')) || defaultGoals.na,
-                ka: parseInt(localStorage.getItem('goal_ka')) || defaultGoals.ka
-            };
+            const goals = { kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal, pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro, carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb, fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat, na: parseInt(localStorage.getItem('goal_na')) || defaultGoals.na, ka: parseInt(localStorage.getItem('goal_ka')) || defaultGoals.ka };
+            currentEaten = { kcal: parseInt(localStorage.getItem(getKey('eaten_kcal'))) || 0, pro: parseInt(localStorage.getItem(getKey('eaten_pro'))) || 0, carb: parseInt(localStorage.getItem(getKey('eaten_carb'))) || 0, fat: parseInt(localStorage.getItem(getKey('eaten_fat'))) || 0, na: parseInt(localStorage.getItem(getKey('eaten_na'))) || 0, ka: parseInt(localStorage.getItem(getKey('eaten_ka'))) || 0 };
+            let waterGoal = parseInt(localStorage.getItem('water_goal')) || 3500; let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || []; currentWater = log.reduce((a, b) => a + b, 0);
 
-            currentEaten = {
-                kcal: parseInt(localStorage.getItem(getKey('eaten_kcal'))) || 0,
-                pro: parseInt(localStorage.getItem(getKey('eaten_pro'))) || 0,
-                carb: parseInt(localStorage.getItem(getKey('eaten_carb'))) || 0,
-                fat: parseInt(localStorage.getItem(getKey('eaten_fat'))) || 0,
-                na: parseInt(localStorage.getItem(getKey('eaten_na'))) || 0,
-                ka: parseInt(localStorage.getItem(getKey('eaten_ka'))) || 0
-            };
+            document.getElementById('display-kcal-goal').innerText = goals.kcal; document.getElementById('display-kcal-eaten').innerText = currentEaten.kcal; document.getElementById('display-kcal-left').innerText = Math.max(0, goals.kcal - currentEaten.kcal);
+            document.getElementById('display-pro-goal').innerText = goals.pro; document.getElementById('display-pro-eaten').innerText = currentEaten.pro; document.getElementById('display-carb-goal').innerText = goals.carb; document.getElementById('display-carb-eaten').innerText = currentEaten.carb; document.getElementById('display-fat-goal').innerText = goals.fat; document.getElementById('display-fat-eaten').innerText = currentEaten.fat;
+            document.getElementById('bar-pro').style.width = Math.min(100, (currentEaten.pro / goals.pro) * 100) + '%'; document.getElementById('bar-carb').style.width = Math.min(100, (currentEaten.carb / goals.carb) * 100) + '%'; document.getElementById('bar-fat').style.width = Math.min(100, (currentEaten.fat / goals.fat) * 100) + '%';
 
-            // Set default water goal to 3500 (fits 70kg perfectly) if not set
-            let waterGoal = parseInt(localStorage.getItem('water_goal')) || 3500;
-            let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
-            currentWater = log.reduce((a, b) => a + b, 0);
+            document.getElementById('display-na-goal').innerText = goals.na; document.getElementById('display-na-eaten').innerText = currentEaten.na; document.getElementById('bar-na').style.width = Math.min(100, (currentEaten.na / goals.na) * 100) + '%';
+            document.getElementById('display-ka-goal').innerText = goals.ka; document.getElementById('display-ka-eaten').innerText = currentEaten.ka; document.getElementById('bar-ka').style.width = Math.min(100, (currentEaten.ka / goals.ka) * 100) + '%';
 
-            document.getElementById('display-kcal-goal').innerText = goals.kcal;
-            document.getElementById('display-kcal-eaten').innerText = currentEaten.kcal;
-            document.getElementById('display-kcal-left').innerText = Math.max(0, goals.kcal - currentEaten.kcal);
-            
-            document.getElementById('display-pro-goal').innerText = goals.pro;
-            document.getElementById('display-pro-eaten').innerText = currentEaten.pro;
-            document.getElementById('display-carb-goal').innerText = goals.carb;
-            document.getElementById('display-carb-eaten').innerText = currentEaten.carb;
-            document.getElementById('display-fat-goal').innerText = goals.fat;
-            document.getElementById('display-fat-eaten').innerText = currentEaten.fat;
+            document.getElementById('display-water-goal').innerText = waterGoal; document.getElementById('display-water').innerText = currentWater; document.getElementById('bar-water').style.width = Math.min(100, (currentWater / waterGoal) * 100) + '%';
+            document.getElementById('btn-w1').innerText = '+ ' + (localStorage.getItem('water_btn_1') || 250); document.getElementById('btn-w2').innerText = '+ ' + (localStorage.getItem('water_btn_2') || 500);
 
-            document.getElementById('bar-pro').style.width = Math.min(100, (currentEaten.pro / goals.pro) * 100) + '%';
-            document.getElementById('bar-carb').style.width = Math.min(100, (currentEaten.carb / goals.carb) * 100) + '%';
-            document.getElementById('bar-fat').style.width = Math.min(100, (currentEaten.fat / goals.fat) * 100) + '%';
-
-            // Expert Goals
-            document.getElementById('display-na-goal').innerText = goals.na;
-            document.getElementById('display-na-eaten').innerText = currentEaten.na;
-            document.getElementById('bar-na').style.width = Math.min(100, (currentEaten.na / goals.na) * 100) + '%';
-            document.getElementById('display-ka-goal').innerText = goals.ka;
-            document.getElementById('display-ka-eaten').innerText = currentEaten.ka;
-            document.getElementById('bar-ka').style.width = Math.min(100, (currentEaten.ka / goals.ka) * 100) + '%';
-
-            // Water
-            document.getElementById('display-water-goal').innerText = waterGoal;
-            document.getElementById('display-water').innerText = currentWater;
-            document.getElementById('bar-water').style.width = Math.min(100, (currentWater / waterGoal) * 100) + '%';
-            document.getElementById('btn-w1').innerText = '+ ' + (localStorage.getItem('water_btn_1') || 250);
-            document.getElementById('btn-w2').innerText = '+ ' + (localStorage.getItem('water_btn_2') || 500);
-
-            // Inputs Sync
-            document.getElementById('input-goal-kcal').value = goals.kcal;
-            document.getElementById('input-goal-pro').value = goals.pro; document.getElementById('slider-goal-pro').value = goals.pro;
+            document.getElementById('input-goal-kcal').value = goals.kcal; document.getElementById('input-goal-pro').value = goals.pro; document.getElementById('slider-goal-pro').value = goals.pro;
             document.getElementById('input-goal-carb').value = goals.carb; document.getElementById('slider-goal-carb').value = goals.carb;
             document.getElementById('input-goal-fat').value = goals.fat; document.getElementById('slider-goal-fat').value = goals.fat;
             document.getElementById('input-goal-na').value = goals.na; document.getElementById('slider-goal-na').value = goals.na;
             document.getElementById('input-goal-ka').value = goals.ka; document.getElementById('slider-goal-ka').value = goals.ka;
-
             loadHistory();
         }
 
@@ -586,32 +429,22 @@
         function hTouchEnd(e, index) { clearTimeout(pressTimer); if(swipingIndex !== index) return; let diffX = currentX - startX; let el = document.getElementById(`hist-card-${index}`); el.style.transform = diffX < -45 ? `translateX(-80px)` : `translateX(0px)`; swipingIndex = -1; }
 
         function deleteHistoryItem(index) {
-            let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || [];
-            let item = history[index];
-            localStorage.setItem(getKey('eaten_kcal'), Math.max(0, currentEaten.kcal - item.kcal));
-            localStorage.setItem(getKey('eaten_pro'), Math.max(0, currentEaten.pro - item.pro));
-            localStorage.setItem(getKey('eaten_carb'), Math.max(0, currentEaten.carb - item.carb));
-            localStorage.setItem(getKey('eaten_fat'), Math.max(0, currentEaten.fat - item.fat));
-            localStorage.setItem(getKey('eaten_na'), Math.max(0, currentEaten.na - (item.na || 0)));
-            localStorage.setItem(getKey('eaten_ka'), Math.max(0, currentEaten.ka - (item.ka || 0)));
-            history.splice(index, 1);
-            localStorage.setItem(getKey('food_history'), JSON.stringify(history));
-            loadData();
+            let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || []; let item = history[index];
+            localStorage.setItem(getKey('eaten_kcal'), Math.max(0, currentEaten.kcal - item.kcal)); localStorage.setItem(getKey('eaten_pro'), Math.max(0, currentEaten.pro - item.pro));
+            localStorage.setItem(getKey('eaten_carb'), Math.max(0, currentEaten.carb - item.carb)); localStorage.setItem(getKey('eaten_fat'), Math.max(0, currentEaten.fat - item.fat));
+            localStorage.setItem(getKey('eaten_na'), Math.max(0, currentEaten.na - (item.na || 0))); localStorage.setItem(getKey('eaten_ka'), Math.max(0, currentEaten.ka - (item.ka || 0)));
+            history.splice(index, 1); localStorage.setItem(getKey('food_history'), JSON.stringify(history)); loadData();
         }
 
         function loadHistory() {
-            let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || [];
-            const container = document.getElementById('history-list');
-            if(history.length === 0) {
-                container.innerHTML = '<div class="history-empty">An diesem Tag hast du nichts eingetragen.</div>';
-            } else {
+            let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || []; const container = document.getElementById('history-list');
+            if(history.length === 0) { container.innerHTML = '<div class="history-empty">An diesem Tag hast du nichts eingetragen.</div>'; } else {
                 container.innerHTML = history.map((item, index) => {
                     let expertHtml = isExpert ? `<span>🧂 ${item.na || 0}mg</span> <span>🍌 ${item.ka || 0}mg</span>` : '';
                     return `
                     <div class="history-item-container">
                         <div class="history-delete-btn" onclick="deleteHistoryItem(${index})">Löschen</div>
-                        <div class="history-card" id="hist-card-${index}" 
-                             ontouchstart="hTouchStart(event, ${index})" ontouchmove="hTouchMove(event, ${index})" ontouchend="hTouchEnd(event, ${index})">
+                        <div class="history-card" id="hist-card-${index}" ontouchstart="hTouchStart(event, ${index})" ontouchmove="hTouchMove(event, ${index})" ontouchend="hTouchEnd(event, ${index})">
                             <div class="history-title">${item.name}</div>
                             <div class="history-macros">
                                 <span>🔥 ${item.kcal} kcal</span>
@@ -621,46 +454,50 @@
                                 ${expertHtml}
                             </div>
                         </div>
-                    </div>
-                `}).reverse().join('');
+                    </div>`}).reverse().join('');
             }
         }
 
         function sync(macro, source) {
-            const inputEl = document.getElementById(`input-goal-${macro}`);
-            const sliderEl = document.getElementById(`slider-goal-${macro}`);
+            const inputEl = document.getElementById(`input-goal-${macro}`); const sliderEl = document.getElementById(`slider-goal-${macro}`);
             if (source === 'slider') { inputEl.value = sliderEl.value; } else { sliderEl.value = inputEl.value; }
             if (macro === 'pro' || macro === 'carb' || macro === 'fat') {
-                const p = parseInt(document.getElementById('input-goal-pro').value) || 0;
-                const c = parseInt(document.getElementById('input-goal-carb').value) || 0;
-                const f = parseInt(document.getElementById('input-goal-fat').value) || 0;
+                const p = parseInt(document.getElementById('input-goal-pro').value) || 0; const c = parseInt(document.getElementById('input-goal-carb').value) || 0; const f = parseInt(document.getElementById('input-goal-fat').value) || 0;
                 document.getElementById('input-goal-kcal').value = (p * 4) + (c * 4) + (f * 9);
             }
         }
 
         function generateMeals() {
-            const goals = {
-                kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal,
-                pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro,
-                carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb,
-                fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat,
-                na: parseInt(localStorage.getItem('goal_na')) || defaultGoals.na,
-                ka: parseInt(localStorage.getItem('goal_ka')) || defaultGoals.ka
-            };
-
-            let remPro = Math.max(0, goals.pro - currentEaten.pro);
-            let remCarb = Math.max(0, goals.carb - currentEaten.carb);
-            let remFat = Math.max(0, goals.fat - currentEaten.fat);
-            let remKcal = Math.max(0, goals.kcal - currentEaten.kcal);
+            const goals = { kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal, pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro, carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb, fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat, na: parseInt(localStorage.getItem('goal_na')) || defaultGoals.na, ka: parseInt(localStorage.getItem('goal_ka')) || defaultGoals.ka };
+            let remPro = Math.max(0, goals.pro - currentEaten.pro); let remCarb = Math.max(0, goals.carb - currentEaten.carb); let remFat = Math.max(0, goals.fat - currentEaten.fat); let remKcal = Math.max(0, goals.kcal - currentEaten.kcal);
+            let remNa = Math.max(0, goals.na - currentEaten.na); let remKa = Math.max(0, goals.ka - currentEaten.ka);
             
-            let targetKcal = Math.min(remKcal, 750); 
-            let factor = remKcal > 0 ? targetKcal / ((remPro * 4) + (remCarb * 4) + (remFat * 9)) : 0;
-
-            let mealPro = remPro * factor; let mealCarb = remCarb * factor; let mealFat = remFat * factor;
             const container = document.getElementById('options-container'); generatedOptions = [];
-            if (remKcal <= 0) { container.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px; text-align: center; padding: 20px;">Alle Makros erfüllt! 💪</div>`; return; }
 
-            // OPTION 1
+            // 1. Kalorien Voll Modus (Elektrolyt-Ausgleich)
+            if (remKcal <= 50) {
+                if (isExpert && remNa > 300) {
+                    let saltGrams = Math.round(remNa / db.salz.na);
+                    if (saltGrams > 0) {
+                        generatedOptions.push({ title: "Elektrolyt-Ausgleich", items: [{ id: 'salz', name: db.salz.n, grams: saltGrams }] });
+                        container.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-size:13px;">Deine Makros sind voll. Hier ist dein fehlendes Salz:</p>` + renderOptions(generatedOptions, goals);
+                    }
+                    if (remKa > 500) {
+                        container.innerHTML += `<div style="text-align:center; font-size:12px; color:var(--warning); margin-top:8px;">Tipp: Dir fehlen noch ${remKa}mg Kalium. Nutze ein kalorienfreies Supplement!</div>`;
+                    }
+                } else {
+                    container.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px; text-align: center; padding: 20px;">Alle Makros erfüllt! 💪</div>`;
+                }
+                return;
+            }
+
+            // Normaler Modus (Makros + Elektrolyte skalieren)
+            let targetKcal = Math.min(remKcal, 750); 
+            let factor = targetKcal / ((remPro * 4) + (remCarb * 4) + (remFat * 9));
+            let mealPro = remPro * factor; let mealCarb = remCarb * factor; let mealFat = remFat * factor;
+            let mealNa = remNa * factor; let mealKa = remKa * factor;
+
+            // OPTION 1: Herzhaft (Reis)
             let o1_g_gemuese = (mealCarb > 10 && mealPro > 5) ? 150 : 0; 
             let o1_c_left = Math.max(0, mealCarb - (o1_g_gemuese * db.tk_gemuese.c)); let o1_g_reis = round(o1_c_left / db.reis.c, 5); 
             let o1_p_left = Math.max(0, mealPro - (o1_g_gemuese * db.tk_gemuese.p) - (o1_g_reis * db.reis.p)); let o1_g_pute = round(o1_p_left / db.putenhack.p, 10); 
@@ -671,9 +508,38 @@
             if(o1_g_reis > 0) o1_items.push({ id: 'reis', name: db.reis.n, grams: o1_g_reis });
             if(o1_g_gemuese > 0) o1_items.push({ id: 'tk_gemuese', name: db.tk_gemuese.n, grams: o1_g_gemuese });
             if(o1_g_oil > 0) o1_items.push({ id: 'olivenoel', name: db.olivenoel.n, grams: o1_g_oil });
-            if(o1_items.length > 0) generatedOptions.push({ title: "Herzhaftes Menü", items: o1_items });
+            
+            // Auto-Salzen
+            if(isExpert) {
+                let currentNa = o1_items.reduce((s, i) => s + (i.grams * db[i.id].na), 0);
+                if(mealNa - currentNa > 100) {
+                    let sG = Math.round((mealNa - currentNa) / db.salz.na);
+                    if(sG > 0) o1_items.push({ id: 'salz', name: db.salz.n, grams: sG });
+                }
+            }
+            if(o1_items.length > 0) generatedOptions.push({ title: "Herzhaftes Menü (Reis)", items: o1_items });
 
-            // OPTION 2
+            // OPTION 3: Kalium-Boost (Kartoffeln)
+            if(isExpert && mealKa > 800 && mealCarb > 20) {
+                let o3_c_left = Math.max(0, mealCarb - (o1_g_gemuese * db.tk_gemuese.c)); let o3_g_kart = round(o3_c_left / db.kartoffeln.c, 10);
+                let o3_p_left = Math.max(0, mealPro - (o1_g_gemuese * db.tk_gemuese.p) - (o3_g_kart * db.kartoffeln.p)); let o3_g_pute = round(o3_p_left / db.putenhack.p, 10);
+                let o3_f_left = Math.max(0, mealFat - (o1_g_gemuese * db.tk_gemuese.f) - (o3_g_kart * db.kartoffeln.f) - (o3_g_pute * db.putenhack.f)); let o3_g_oil = round(o3_f_left / db.olivenoel.f, 5);
+                
+                let o3_items = [];
+                if(o3_g_pute > 0) o3_items.push({ id: 'putenhack', name: db.putenhack.n, grams: o3_g_pute });
+                if(o3_g_kart > 0) o3_items.push({ id: 'kartoffeln', name: db.kartoffeln.n, grams: o3_g_kart });
+                if(o1_g_gemuese > 0) o3_items.push({ id: 'tk_gemuese', name: db.tk_gemuese.n, grams: o1_g_gemuese });
+                if(o3_g_oil > 0) o3_items.push({ id: 'olivenoel', name: db.olivenoel.n, grams: o3_g_oil });
+                
+                let currentNa = o3_items.reduce((s, i) => s + (i.grams * db[i.id].na), 0);
+                if(mealNa - currentNa > 100) {
+                    let sG = Math.round((mealNa - currentNa) / db.salz.na);
+                    if(sG > 0) o3_items.push({ id: 'salz', name: db.salz.n, grams: sG });
+                }
+                if(o3_items.length > 0) generatedOptions.push({ title: "Kalium-Boost (Kartoffeln)", items: o3_items });
+            }
+
+            // OPTION 2: Süß
             let o2_g_chia = round(Math.min(25, mealFat / db.chiasamen.f), 5); 
             let o2_c_left = Math.max(0, mealCarb - (o2_g_chia * db.chiasamen.c)); let o2_g_oats = round(o2_c_left / db.haferflocken.c, 5); 
             let o2_p_left = Math.max(0, mealPro - (o2_g_chia * db.chiasamen.p) - (o2_g_oats * db.haferflocken.p)); let o2_g_skyr = round(o2_p_left / db.skyr.p, 10); 
@@ -682,45 +548,55 @@
             if(o2_g_skyr > 0) o2_items.push({ id: 'skyr', name: db.skyr.n, grams: o2_g_skyr });
             if(o2_g_oats > 0) o2_items.push({ id: 'haferflocken', name: db.haferflocken.n, grams: o2_g_oats });
             if(o2_g_chia > 0) o2_items.push({ id: 'chiasamen', name: db.chiasamen.n, grams: o2_g_chia });
+            
+            if(isExpert) {
+                let currentNa = o2_items.reduce((s, i) => s + (i.grams * db[i.id].na), 0);
+                if(mealNa - currentNa > 100) {
+                    let sG = Math.round((mealNa - currentNa) / db.salz.na);
+                    if(sG > 0) o2_items.push({ id: 'salz', name: "Salz (Prise)", grams: sG });
+                }
+            }
             if(o2_items.length > 0) generatedOptions.push({ title: "Süßes Menü", items: o2_items });
 
-            if (generatedOptions.length === 0) { container.innerHTML = `<div style="color: var(--warning); text-align: center;">Du brauchst heute kaum noch etwas.</div>`; } else {
-                container.innerHTML = generatedOptions.map((opt, index) => {
-                    let pPro=0, pCarb=0, pFat=0, pKcal=0, pNa=0, pKa=0;
-                    opt.items.forEach(i => { pPro += i.grams * db[i.id].p; pCarb += i.grams * db[i.id].c; pFat += i.grams * db[i.id].f; pKcal += i.grams * db[i.id].k; pNa += i.grams * db[i.id].na; pKa += i.grams * db[i.id].ka; });
-                    
-                    let aKcal = Math.round(goals.kcal - currentEaten.kcal - pKcal); let aPro = Math.round(goals.pro - currentEaten.pro - pPro); let aCarb = Math.round(goals.carb - currentEaten.carb - pCarb); let aFat = Math.round(goals.fat - currentEaten.fat - pFat);
-                    let aNa = Math.round(goals.na - currentEaten.na - pNa); let aKa = Math.round(goals.ka - currentEaten.ka - pKa);
+            container.innerHTML = `<p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Auf ~${Math.round(targetKcal)} kcal für dich skaliert:</p>` + renderOptions(generatedOptions, goals);
+        }
 
-                    let textString = opt.items.map(i => `${i.grams}g ${i.name}`).join(' + ');
-                    let expertHtmlOpt = isExpert ? `<span>🧂 ${Math.round(pNa)}mg</span> <span>🍌 ${Math.round(pKa)}mg</span>` : '';
-                    let expertHtmlRem = isExpert ? `<span>🧂 ${formatDiff(aNa)}mg</span> <span>🍌 ${formatDiff(aKa)}mg</span>` : '';
+        function renderOptions(options, goals) {
+            return options.map((opt, index) => {
+                let pPro=0, pCarb=0, pFat=0, pKcal=0, pNa=0, pKa=0;
+                opt.items.forEach(i => { pPro += i.grams * db[i.id].p; pCarb += i.grams * db[i.id].c; pFat += i.grams * db[i.id].f; pKcal += i.grams * db[i.id].k; pNa += i.grams * db[i.id].na; pKa += i.grams * db[i.id].ka; });
+                
+                let aKcal = Math.round(goals.kcal - currentEaten.kcal - pKcal); let aPro = Math.round(goals.pro - currentEaten.pro - pPro); let aCarb = Math.round(goals.carb - currentEaten.carb - pCarb); let aFat = Math.round(goals.fat - currentEaten.fat - pFat);
+                let aNa = Math.round(goals.na - currentEaten.na - pNa); let aKa = Math.round(goals.ka - currentEaten.ka - pKa);
 
-                    return `
-                    <div class="option-card">
-                        <h3>${opt.title}</h3>
-                        <div class="option-items">${textString.replace(/\+/g, '<br>+ ')}</div>
-                        <div class="option-macros">
-                            <span>🔥 ${Math.round(pKcal)} kcal</span>
-                            <span style="color: var(--protein)">${emojis.pro} ${Math.round(pPro)}g</span>
-                            <span style="color: var(--carbs)">${emojis.carb} ${Math.round(pCarb)}g</span>
-                            <span style="color: var(--fats)">${emojis.fat} ${Math.round(pFat)}g</span>
-                            ${expertHtmlOpt}
+                let textString = opt.items.map(i => `${i.grams}g ${i.name}`).join(' + ');
+                let expertHtmlOpt = isExpert ? `<span>🧂 ${Math.round(pNa)}mg</span> <span>🍌 ${Math.round(pKa)}mg</span>` : '';
+                let expertHtmlRem = isExpert ? `<span>🧂 ${formatDiff(aNa)}mg</span> <span>🍌 ${formatDiff(aKa)}mg</span>` : '';
+
+                return `
+                <div class="option-card">
+                    <h3>${opt.title}</h3>
+                    <div class="option-items">${textString.replace(/\+/g, '<br>+ ')}</div>
+                    <div class="option-macros">
+                        <span>🔥 ${Math.round(pKcal)} kcal</span>
+                        <span style="color: var(--protein)">${emojis.pro} ${Math.round(pPro)}g</span>
+                        <span style="color: var(--carbs)">${emojis.carb} ${Math.round(pCarb)}g</span>
+                        <span style="color: var(--fats)">${emojis.fat} ${Math.round(pFat)}g</span>
+                        ${expertHtmlOpt}
+                    </div>
+                    <div class="preview-box">
+                        <div class="preview-title">Danach noch übrig:</div>
+                        <div class="history-macros" style="font-size: 13px;">
+                            <span>🔥 ${formatDiff(aKcal)}</span>
+                            <span>${emojis.pro} ${formatDiff(aPro)}g</span>
+                            <span>${emojis.carb} ${formatDiff(aCarb)}g</span>
+                            <span>${emojis.fat} ${formatDiff(aFat)}g</span>
+                            ${expertHtmlRem}
                         </div>
-                        <div class="preview-box">
-                            <div class="preview-title">Danach noch übrig:</div>
-                            <div class="history-macros" style="font-size: 13px;">
-                                <span>🔥 ${formatDiff(aKcal)}</span>
-                                <span>${emojis.pro} ${formatDiff(aPro)}g</span>
-                                <span>${emojis.carb} ${formatDiff(aCarb)}g</span>
-                                <span>${emojis.fat} ${formatDiff(aFat)}g</span>
-                                ${expertHtmlRem}
-                            </div>
-                        </div>
-                        <button class="btn-eat-option" onclick="openNewEditMeal(${index})">Anpassen & Essen</button>
-                    </div>`;
-                }).join('');
-            }
+                    </div>
+                    <button class="btn-eat-option" onclick="openNewEditMeal(${index})">Anpassen & Essen</button>
+                </div>`;
+            }).join('');
         }
 
         function getOptionsForCategory(category, selectedId) {
