@@ -113,6 +113,8 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
         .expert-hidden { display: none !important; }
+        
+        .btn-calc-expert { background: none; color: var(--accent); border: 2px solid var(--accent); padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
@@ -161,7 +163,7 @@
         </div>
     </div>
 
-    <!-- Experten Dashboard (wird dynamisch ein/ausgeblendet) -->
+    <!-- Experten Dashboard -->
     <div class="macro-grid-expert expert-hidden" id="expert-dashboard">
         <div class="macro-box">
             <div class="macro-title">Natrium</div>
@@ -224,7 +226,6 @@
         </div>
     </div>
 
-    <!-- UI/Emoji & Expert Settings Modal -->
     <div class="modal-overlay" id="emojiModal">
         <div class="modal">
             <h2>App Einstellungen</h2>
@@ -289,6 +290,11 @@
 
             <!-- Expert Settings inside Macro Goals -->
             <div id="expert-settings" class="expert-hidden" style="border-top: 1px solid #E5E5EA; padding-top: 16px; margin-top: 16px;">
+                
+                <button class="btn-calc-expert" onclick="calcElectroGoals()">
+                    <span>⚡ Vaskularitäts-Ziele auto-berechnen</span>
+                </button>
+
                 <div class="input-group">
                     <div class="input-header"><label>Natrium (mg)</label><input type="number" id="input-goal-na" oninput="sync('na', 'input')"></div>
                     <input type="range" id="slider-goal-na" min="0" max="10000" step="50" oninput="sync('na', 'slider')">
@@ -350,7 +356,6 @@
             fat: localStorage.getItem('emoji_fat') || '🥑'
         };
 
-        // Datenbank inkl. Natrium (na) und Kalium (ka) pro 1g
         const db = {
             skyr: { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65, na: 0.4, ka: 1.5, cat: 'pro' },
             putenhack: { n: "Putenhack", p: 0.20, c: 0.00, f: 0.05, k: 1.25, na: 0.7, ka: 3.0, cat: 'pro' },
@@ -396,6 +401,42 @@
                 document.getElementById('expert-dashboard').classList.add('expert-hidden');
                 document.getElementById('expert-settings').classList.add('expert-hidden');
             }
+        }
+
+        function calcElectroGoals() {
+            let wStr = localStorage.getItem('user_weight');
+            if(!wStr) {
+                wStr = prompt("Bitte Körpergewicht in kg eingeben (z.B. 70):");
+                if(wStr) {
+                    wStr = wStr.replace(',','.');
+                    localStorage.setItem('user_weight', wStr);
+                } else {
+                    return;
+                }
+            }
+            
+            let weight = parseFloat(wStr);
+            if(isNaN(weight) || weight <= 0) return;
+            
+            // Rechnet die reale Wasser-Faustformel aus (wird auf 100ml gerundet)
+            let waterMl = Math.ceil((weight * 50) / 100) * 100; 
+            
+            // Formel: ca. 1300mg Natrium pro Liter Wasser (Gerundet auf 50mg)
+            let na = Math.round((waterMl / 1000) * 1300 / 50) * 50; 
+            
+            // Formel: Kalium ist ca 1.15x Natrium (Gerundet auf 50mg)
+            let ka = Math.round((na * 1.15) / 50) * 50;
+
+            document.getElementById('input-goal-na').value = na;
+            document.getElementById('slider-goal-na').value = na;
+            document.getElementById('input-goal-ka').value = ka;
+            document.getElementById('slider-goal-ka').value = ka;
+            
+            alert(`Gewicht: ${weight}kg\nWasser: ${waterMl/1000} Liter\n\nVaskularitäts-Ziele gesetzt auf:\n🧂 ${na}mg Natrium\n🍌 ${ka}mg Kalium`);
+            
+            // Update the display targets immediately without saving (user still needs to click "Ziele Speichern")
+            sync('na', 'input');
+            sync('ka', 'input');
         }
 
         function updateDateDisplay() {
@@ -450,7 +491,7 @@
 
         function openWaterSettings() {
             document.getElementById('input-weight').value = localStorage.getItem('user_weight') || '';
-            document.getElementById('input-water-goal').value = localStorage.getItem('water_goal') || 3000;
+            document.getElementById('input-water-goal').value = localStorage.getItem('water_goal') || 3500;
             let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
             let html = log.length === 0 ? '<div class="history-empty">Noch nichts getrunken heute.</div>' : log.map((amount, idx) => `
                 <div class="water-log-item"><span>💧 ${amount} ml</span><button class="btn-remove-ingredient" onclick="deleteWaterLog(${idx})">🗑️</button></div>
@@ -493,7 +534,8 @@
                 ka: parseInt(localStorage.getItem(getKey('eaten_ka'))) || 0
             };
 
-            let waterGoal = parseInt(localStorage.getItem('water_goal')) || 3000;
+            // Set default water goal to 3500 (fits 70kg perfectly) if not set
+            let waterGoal = parseInt(localStorage.getItem('water_goal')) || 3500;
             let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
             currentWater = log.reduce((a, b) => a + b, 0);
 
