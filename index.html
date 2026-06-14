@@ -60,7 +60,8 @@
         .edit-swap-select { border: 1px solid #E5E5EA; border-radius: 8px; font-size: 14px; font-weight: 600; background: var(--bg-color); color: var(--accent); padding: 8px; width: 100%; text-overflow: ellipsis; appearance: none; -webkit-appearance: none; cursor: pointer; margin-bottom: 8px; }
         .edit-swap-select.cat-select { background: var(--card-bg); color: var(--text-main); font-weight: 500; }
         .edit-input-wrapper { display: flex; align-items: center; justify-content: space-between; }
-        .edit-input-wrapper input { width: 70px; padding: 8px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--text-main); margin-right: 8px; }
+        .edit-input-wrapper input { width: 60px; padding: 8px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--text-main); margin-right: 4px; }
+        .btn-remove-ingredient { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 0 4px 8px; margin-left: 4px; display: flex; align-items: center; justify-content: center; opacity: 0.8;}
 
         .input-group { margin-bottom: 20px; }
         .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -449,7 +450,7 @@
                         <div class="preview-box">
                             <div class="preview-title">Danach noch übrig:</div>
                             <div class="history-macros" style="font-size: 13px;">
-                                <span>🔥 ${formatDiff(afterKcal)} kcal</span>
+                                <span>🔥 ${formatDiff(afterKcal)}</span>
                                 <span>🥩 ${formatDiff(afterPro)}g</span>
                                 <span>🍚 ${formatDiff(afterCarb)}g</span>
                                 <span>🥑 ${formatDiff(afterFat)}g</span>
@@ -489,6 +490,7 @@
                             <div style="display:flex; align-items:center;">
                                 <input type="number" value="${item.grams}" oninput="updateEditItem(${i}, this.value)">
                                 <span style="color: var(--text-muted); font-size:15px; font-weight:600;">g</span>
+                                <button class="btn-remove-ingredient" onclick="removeEditItem(${i})">🗑️</button>
                             </div>
                         </div>
                     </div>
@@ -528,6 +530,12 @@
         function addEditItem() {
             let defaultId = getFirstIdForCat('pro'); 
             currentEditMeal.items.push({ id: defaultId, name: db[defaultId].n, grams: 0 });
+            renderEditInputs();
+            updateEditMacros();
+        }
+
+        function removeEditItem(index) {
+            currentEditMeal.items.splice(index, 1);
             renderEditInputs();
             updateEditMacros();
         }
