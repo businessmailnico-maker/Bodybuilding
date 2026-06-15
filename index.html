@@ -29,12 +29,17 @@
         .date-display { font-size: 17px; font-weight: 600; color: var(--text-main); text-align: center; }
         #native-date-picker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 12px; }
         h1 { font-size: 34px; font-weight: 700; margin: 0; }
         .header-actions { display: flex; align-items: center; gap: 12px; }
         .btn-settings { color: var(--accent); font-size: 16px; font-weight: 600; background: none; border: none; cursor: pointer; padding: 0; }
         .btn-gear { font-size: 24px; background: none; border: none; cursor: pointer; padding: 0; color: var(--text-muted); }
         
+        /* Segmented Control iOS Look */
+        .preset-selector { display: flex; background: #E5E5EA; padding: 2px; border-radius: 9px; margin-bottom: 16px; }
+        .preset-tab { flex: 1; text-align: center; padding: 6px 0; font-size: 13px; font-weight: 600; border-radius: 7px; cursor: pointer; color: var(--text-main); transition: background 0.15s; }
+        .preset-tab.active { background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
         .card { background-color: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         .macro-grid-expert { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
@@ -48,7 +53,7 @@
         .progress-bar-bg { background-color: var(--bg-color); height: 8px; border-radius: 4px; width: 100%; margin-top: 8px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
         
-        .btn-water { background: var(--bg-color); color: var(--water); font-size: 15px; font-weight: 600; border: none; border-radius: 10px; padding: 8px 12px; cursor: pointer; transition: opacity 0.2s;}
+        .btn-water { background: var(--bg-color); color: var(--water); font-size: 14px; font-weight: 600; border: none; border-radius: 10px; padding: 8px 10px; cursor: pointer; transition: opacity 0.2s;}
         .btn-water:active { opacity: 0.5; }
         .water-header { display: flex; justify-content: space-between; align-items: center; }
 
@@ -79,7 +84,7 @@
         .input-group { margin-bottom: 20px; }
         .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .input-header label { font-size: 15px; font-weight: 500; margin: 0; }
-        .input-header input[type=number], .input-header input[type=text] { width: 80px; padding: 6px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--accent); }
+        .input-header input[type=number], .input-header input[type=text], .input-header select { width: 90px; padding: 6px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--accent); }
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; margin-top: -10px; }
@@ -87,8 +92,6 @@
         #slider-goal-pro::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--protein) 0%, #E5E5EA 100%); }
         #slider-goal-carb::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--carbs) 0%, #E5E5EA 100%); }
         #slider-goal-fat::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--fats) 0%, #E5E5EA 100%); }
-        #slider-goal-na::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--na) 0%, #E5E5EA 100%); }
-        #slider-goal-ka::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--ka) 0%, #E5E5EA 100%); }
 
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; cursor: pointer;}
@@ -101,7 +104,6 @@
         .history-empty { text-align: center; color: var(--text-muted); font-size: 15px; margin-top: 20px; font-style: italic; }
         
         .water-log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-color); border-radius: 10px; margin-bottom: 8px; font-weight: 600; font-size: 15px;}
-        
         .expert-toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--card-bg); border-radius: 12px; border: 1px solid #E5E5EA; margin-top: 16px;}
         .switch { position: relative; display: inline-block; width: 50px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -110,7 +112,6 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
         .expert-hidden { display: none !important; }
-        
         .btn-calc-expert { background: none; color: var(--accent); border: 2px solid var(--accent); padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 6px; }
     </style>
 </head>
@@ -126,10 +127,31 @@
     </div>
 
     <div class="header">
-        <h1 id="header-title">Übersicht</h1>
+        <h1>Übersicht</h1>
         <div class="header-actions">
             <button class="btn-settings" onclick="openSettings()">Ziele</button>
             <button class="btn-gear" onclick="openEmojiSettings()">⚙️</button>
+        </div>
+    </div>
+
+    <div class="preset-selector">
+        <div class="preset-tab" id="tab-low" onclick="selectPreset('low')">Low Carb</div>
+        <div class="preset-tab" id="tab-high" onclick="selectPreset('high')">High Carb</div>
+        <div class="preset-tab" id="tab-rest" onclick="selectPreset('rest')">Rest Day</div>
+    </div>
+
+    <div class="card" style="padding: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <select id="select-workout" style="border:none; background:none; font-size:16px; font-weight:700; color:var(--text-main);" onchange="saveWorkoutPlan()">
+                <option value="none">Kein Training heute</option>
+                <option value="ok">Oberkörper (OK) + Stairmaster</option>
+                <option value="uk">Unterkörper (UK) + Stairmaster</option>
+                <option value="arme">Arme + Stairmaster</option>
+            </select>
+            <div style="display:flex; align-items:center; gap:4px;">
+                <span style="font-size:13px; color:var(--text-muted); font-weight:600;">Um:</span>
+                <input type="time" id="input-workout-time" style="border:1px solid #E5E5EA; border-radius:6px; padding:4px; font-weight:600;" onchange="saveWorkoutPlan()">
+            </div>
         </div>
     </div>
 
@@ -181,14 +203,15 @@
                 <h2 style="margin:0; font-size: 15px; color: var(--text-muted); text-transform: uppercase;">Wasser 💧</h2>
                 <span style="font-size: 16px; color: var(--text-muted);">⚙️</span>
             </div>
-            <div style="display:flex; gap: 8px;">
-                <button class="btn-water" id="btn-w1" ontouchstart="wStart(1)" ontouchend="wEnd(1)">+ 250</button>
-                <button class="btn-water" id="btn-w2" ontouchstart="wStart(2)" ontouchend="wEnd(2)">+ 500</button>
+            <div style="display:flex; gap: 6px;">
+                <button class="btn-water" id="btn-w1" ontouchstart="wStart(1)" ontouchend="wEnd(1)">+250</button>
+                <button class="btn-water" id="btn-w2" ontouchstart="wStart(2)" ontouchend="wEnd(2)">+500</button>
+                <button class="btn-water" style="background:rgba(50,173,230,0.15); color:var(--water); font-weight:700;" onclick="addIntraShaker()">+1L Intra 🧂</button>
             </div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px;">
-            <div style="font-size: 28px; font-weight: 700; margin: 4px 0;"><span id="display-water">0</span> <span style="font-size: 16px; color: var(--text-muted);">/ <span id="display-water-goal">3000</span> ml</span></div>
-            <span style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Halten zum Ändern</span>
+            <div style="font-size: 28px; font-weight: 700; margin: 4px 0;"><span id="display-water">0</span> <span style="font-size: 16px; color: var(--text-muted);">/ <span id="display-water-goal">3500</span> ml</span></div>
+            <span style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Tippen / Halten</span>
         </div>
         <div class="progress-bar-bg" style="margin-top: 6px;"><div id="bar-water" class="progress-fill" style="background-color: var(--water); width: 0%;"></div></div>
     </div>
@@ -256,8 +279,8 @@
 
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
-            <h2>Makro Ziele</h2>
-            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top:-15px;">Ziele gelten für alle Tage</p>
+            <h2>Makro Profile editieren</h2>
+            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top:-15px;">Passe die Eckdaten deines aktuellen Profils an:</p>
             <div class="input-group">
                 <div class="input-header"><label>Kalorien (kcal)</label><input type="number" id="input-goal-kcal" disabled style="background: transparent; border: none; font-size: 20px; color: var(--text-main);"></div>
             </div>
@@ -293,10 +316,7 @@
         <div class="modal">
             <h2>Wasser Einstellungen</h2>
             <div class="input-group" style="margin-top: 20px;">
-                <div class="input-header">
-                    <label>Körpergewicht (kg)</label>
-                    <input type="text" id="input-weight" oninput="calcWaterGoal()" placeholder="z.B. 75,5">
-                </div>
+                <div class="input-header"><label>Körpergewicht (kg)</label><input type="text" id="input-weight" oninput="calcWaterGoal()" placeholder="z.B. 70"></div>
                 <p style="font-size: 12px; color: var(--text-muted); margin-top: -5px;">Berechnet 1L pro 20kg Gewicht (Aufgerundet).</p>
             </div>
             <div class="input-group">
@@ -314,23 +334,28 @@
         let currentDateStr = ""; 
         const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
 
-        const defaultGoals = { kcal: 2800, pro: 180, carb: 350, fat: 80, na: 3000, ka: 4000 };
+        // Core BB Profile Profile initialisieren
+        const profiles = {
+            low:  { kcal: 2800, pro: 180, carb: 350, fat: 75,  na: 4550, ka: 5250 },
+            high: { kcal: 3260, pro: 180, carb: 500, fat: 60,  na: 4550, ka: 5250 },
+            rest: { kcal: 2220, pro: 180, carb: 150, fat: 100, na: 4550, ka: 5250 }
+        };
+
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0, na: 0, ka: 0 };
         let currentWater = 0;
         let generatedOptions = []; 
         let currentEditMeal = null; 
         let editingHistoryIndex = -1; 
-        
-        let isExpert = localStorage.getItem('expert_mode') === 'true';
+        let activePreset = "low";
 
+        let isExpert = localStorage.getItem('expert_mode') === 'true';
         let emojis = { pro: localStorage.getItem('emoji_pro') || '🥩', carb: localStorage.getItem('emoji_carb') || '🍚', fat: localStorage.getItem('emoji_fat') || '🥑' };
 
         const db = {
             skyr: { n: "Skyr", p: 0.065, c: 0.08, f: 0.002, k: 0.65, na: 0.4, ka: 1.5, cat: 'pro' },
             putenhack: { n: "Putenhack", p: 0.20, c: 0.00, f: 0.05, k: 1.25, na: 0.7, ka: 3.0, cat: 'pro' },
             magerquark: { n: "Magerquark", p: 0.12, c: 0.04, f: 0.002, k: 0.68, na: 0.4, ka: 1.5, cat: 'pro' },
-            whey_dm: { n: "Whey (DM)", p: 0.80, c: 0.05, f: 0.05, k: 3.85, na: 1.5, ka: 5.0, cat: 'pro' },
-            whey_bulk: { n: "Whey (Bulk)", p: 0.75, c: 0.08, f: 0.06, k: 3.86, na: 1.5, ka: 5.0, cat: 'pro' },
+            whey_dm: { n: "Whey Protein", p: 0.80, c: 0.05, f: 0.05, k: 3.85, na: 1.5, ka: 5.0, cat: 'pro' },
             eier: { n: "Eier (M/L)", p: 0.13, c: 0.01, f: 0.11, k: 1.55, na: 1.4, ka: 1.3, cat: 'pro' },
             sf_spinat: { n: "Schlemmerfilet Spinat", p: 0.11, c: 0.04, f: 0.06, k: 1.15, na: 4.0, ka: 2.5, cat: 'pro' },
             sf_brokkoli: { n: "Schlemmerfilet Brokkoli", p: 0.12, c: 0.04, f: 0.055, k: 1.15, na: 4.0, ka: 2.5, cat: 'pro' },
@@ -359,16 +384,36 @@
         function toggleExpertMode() { isExpert = document.getElementById('expert-toggle').checked; localStorage.setItem('expert_mode', isExpert); applyExpertUI(); }
         function applyExpertUI() { if(isExpert) { document.getElementById('expert-dashboard').classList.remove('expert-hidden'); document.getElementById('expert-settings').classList.remove('expert-hidden'); } else { document.getElementById('expert-dashboard').classList.add('expert-hidden'); document.getElementById('expert-settings').classList.add('expert-hidden'); } }
 
+        function selectPreset(p) {
+            activePreset = p;
+            localStorage.setItem(getKey('active_preset'), p);
+            
+            // Profil in LocalStorage für diesen Tag spiegeln
+            localStorage.setItem(getKey('goal_kcal'), profiles[p].kcal);
+            localStorage.setItem(getKey('goal_pro'), profiles[p].pro);
+            localStorage.setItem(getKey('goal_carb'), profiles[p].carb);
+            localStorage.setItem(getKey('goal_fat'), profiles[p].fat);
+            localStorage.setItem(getKey('goal_na'), profiles[p].na);
+            localStorage.setItem(getKey('goal_ka'), profiles[p].ka);
+            
+            document.querySelectorAll('.preset-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${p}`).classList.add('active');
+            loadData();
+        }
+
+        function saveWorkoutPlan() {
+            localStorage.setItem(getKey('workout_type'), document.getElementById('select-workout').value);
+            localStorage.setItem(getKey('workout_time'), document.getElementById('input-workout-time').value);
+            loadData();
+        }
+
         function calcElectroGoals() {
-            let wStr = localStorage.getItem('user_weight');
-            if(!wStr) { wStr = prompt("Bitte Körpergewicht in kg eingeben (z.B. 70):"); if(wStr) { wStr = wStr.replace(',','.'); localStorage.setItem('user_weight', wStr); } else { return; } }
-            let weight = parseFloat(wStr); if(isNaN(weight) || weight <= 0) return;
+            let weight = parseFloat(localStorage.getItem('user_weight') || 70);
             let waterMl = Math.ceil((weight * 50) / 100) * 100; 
             let na = Math.round((waterMl / 1000) * 1300 / 50) * 50; 
             let ka = Math.round((na * 1.15) / 50) * 50;
             document.getElementById('input-goal-na').value = na; document.getElementById('slider-goal-na').value = na;
             document.getElementById('input-goal-ka').value = ka; document.getElementById('slider-goal-ka').value = ka;
-            alert(`Gewicht: ${weight}kg\nWasser: ${waterMl/1000} Liter\n\nVaskularitäts-Ziele gesetzt auf:\n🧂 ${na}mg Natrium\n🍌 ${ka}mg Kalium`);
             sync('na', 'input'); sync('ka', 'input');
         }
 
@@ -378,16 +423,38 @@
             let today = new Date(); let isToday = (d === today.getDate().toString().padStart(2, '0') && m === (today.getMonth() + 1).toString().padStart(2, '0') && y === today.getFullYear().toString());
             document.getElementById('display-date').innerText = isToday ? `Heute, ${d}.${m}.` : `${dayName} ${d}.${m}.${y}`;
             document.getElementById('native-date-picker').value = currentDateStr; 
+            
+            // Preset laden
+            activePreset = localStorage.getItem(getKey('active_preset')) || "low";
+            document.querySelectorAll('.preset-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${activePreset}`).classList.add('active');
+
+            // Workout laden
+            document.getElementById('select-workout').value = localStorage.getItem(getKey('workout_type')) || "none";
+            document.getElementById('input-workout-time').value = localStorage.getItem(getKey('workout_time')) || "";
+
             loadData();
         }
 
         function changeDate(days) { currentDateObj.setDate(currentDateObj.getDate() + days); updateDateDisplay(); }
         function jumpToDate(dateString) { if(!dateString) return; currentDateObj = new Date(dateString); updateDateDisplay(); }
 
+        // --- Water Tracker Shaker Logic ---
         let wTimer, wFired = false;
-        function wStart(num) { wFired = false; wTimer = setTimeout(() => { wFired = true; let current = num === 1 ? (localStorage.getItem('water_btn_1') || 250) : (localStorage.getItem('water_btn_2') || 500); let newVal = prompt(`Menge anpassen (ml):`, current); if(newVal && !isNaN(parseInt(newVal))) { localStorage.setItem(`water_btn_${num}`, parseInt(newVal)); loadData(); } }, 500); }
-        function wEnd(num) { clearTimeout(wTimer); if(!wFired) { let amount = num === 1 ? parseInt(localStorage.getItem('water_btn_1')||250) : parseInt(localStorage.getItem('water_btn_2')||500); let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || []; log.push(amount); localStorage.setItem(getKey('water_log'), JSON.stringify(log)); loadData(); } }
+        function wStart(num) { wFired = false; wTimer = setTimeout(() => { wFired = true; let current = num === 1 ? (localStorage.getItem('water_btn_1') || 250) : (localStorage.getItem('water_btn_2') || 500); let newVal = prompt(`Menge (ml):`, current); if(newVal && !isNaN(parseInt(newVal))) { localStorage.setItem(`water_btn_${num}`, parseInt(newVal)); loadData(); } }, 500); }
+        function wEnd(num) { clearTimeout(wTimer); if(!wFired) { let amount = num === 1 ? parseInt(localStorage.getItem('water_btn_1')||250) : parseInt(localStorage.getItem('water_btn_2')||500); addWaterUnits(amount, 0); } }
         function calcWaterGoal() { let wStr = document.getElementById('input-weight').value.replace(',', '.'); let w = parseFloat(wStr); if(!isNaN(w) && w > 0) { document.getElementById('input-water-goal').value = Math.ceil((w * 50) / 100) * 100; } }
+        function addIntraShaker() { addWaterUnits(1000, 1500); } // 1L Wasser + 1.5g Natrium
+
+        function addWaterUnits(ml, naMg) {
+            let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
+            log.push(ml);
+            localStorage.setItem(getKey('water_log'), JSON.stringify(log));
+            if(naMg > 0) {
+                localStorage.setItem(getKey('eaten_na'), (parseInt(localStorage.getItem(getKey('eaten_na'))) || 0) + naMg);
+            }
+            loadData();
+        }
 
         function openWaterSettings() {
             document.getElementById('input-weight').value = localStorage.getItem('user_weight') || ''; document.getElementById('input-water-goal').value = localStorage.getItem('water_goal') || 3500;
@@ -401,9 +468,29 @@
         function saveWaterSettings() { localStorage.setItem('user_weight', document.getElementById('input-weight').value); localStorage.setItem('water_goal', document.getElementById('input-water-goal').value); loadData(); closeModal('waterModal'); }
 
         function loadData() {
-            const goals = { kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal, pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro, carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb, fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat, na: parseInt(localStorage.getItem('goal_na')) || defaultGoals.na, ka: parseInt(localStorage.getItem('goal_ka')) || defaultGoals.ka };
-            currentEaten = { kcal: parseInt(localStorage.getItem(getKey('eaten_kcal'))) || 0, pro: parseInt(localStorage.getItem(getKey('eaten_pro'))) || 0, carb: parseInt(localStorage.getItem(getKey('eaten_carb'))) || 0, fat: parseInt(localStorage.getItem(getKey('eaten_fat'))) || 0, na: parseInt(localStorage.getItem(getKey('eaten_na'))) || 0, ka: parseInt(localStorage.getItem(getKey('eaten_ka'))) || 0 };
-            let waterGoal = parseInt(localStorage.getItem('water_goal')) || 3500; let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || []; currentWater = log.reduce((a, b) => a + b, 0);
+            // Lese Ziele (entweder aus dem Tag-Key oder Fallback auf Preset)
+            let preset = localStorage.getItem(getKey('active_preset')) || "low";
+            const goals = {
+                kcal: parseInt(localStorage.getItem(getKey('goal_kcal'))) || profiles[preset].kcal,
+                pro: parseInt(localStorage.getItem(getKey('goal_pro'))) || profiles[preset].pro,
+                carb: parseInt(localStorage.getItem(getKey('goal_carb'))) || profiles[preset].carb,
+                fat: parseInt(localStorage.getItem(getKey('goal_fat'))) || profiles[preset].fat,
+                na: parseInt(localStorage.getItem(getKey('goal_na'))) || profiles[preset].na,
+                ka: parseInt(localStorage.getItem(getKey('goal_ka'))) || profiles[preset].ka
+            };
+
+            currentEaten = {
+                kcal: parseInt(localStorage.getItem(getKey('eaten_kcal'))) || 0,
+                pro: parseInt(localStorage.getItem(getKey('eaten_pro'))) || 0,
+                carb: parseInt(localStorage.getItem(getKey('eaten_carb'))) || 0,
+                fat: parseInt(localStorage.getItem(getKey('eaten_fat'))) || 0,
+                na: parseInt(localStorage.getItem(getKey('eaten_na'))) || 0,
+                ka: parseInt(localStorage.getItem(getKey('eaten_ka'))) || 0
+            };
+
+            let waterGoal = parseInt(localStorage.getItem('water_goal')) || 3500;
+            let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
+            currentWater = log.reduce((a, b) => a + b, 0);
 
             document.getElementById('display-kcal-goal').innerText = goals.kcal; document.getElementById('display-kcal-eaten').innerText = currentEaten.kcal; document.getElementById('display-kcal-left').innerText = Math.max(0, goals.kcal - currentEaten.kcal);
             document.getElementById('display-pro-goal').innerText = goals.pro; document.getElementById('display-pro-eaten').innerText = currentEaten.pro; document.getElementById('display-carb-goal').innerText = goals.carb; document.getElementById('display-carb-eaten').innerText = currentEaten.carb; document.getElementById('display-fat-goal').innerText = goals.fat; document.getElementById('display-fat-eaten').innerText = currentEaten.fat;
@@ -415,7 +502,8 @@
             document.getElementById('display-water-goal').innerText = waterGoal; document.getElementById('display-water').innerText = currentWater; document.getElementById('bar-water').style.width = Math.min(100, (currentWater / waterGoal) * 100) + '%';
             document.getElementById('btn-w1').innerText = '+ ' + (localStorage.getItem('water_btn_1') || 250); document.getElementById('btn-w2').innerText = '+ ' + (localStorage.getItem('water_btn_2') || 500);
 
-            document.getElementById('input-goal-kcal').value = goals.kcal; document.getElementById('input-goal-pro').value = goals.pro; document.getElementById('slider-goal-pro').value = goals.pro;
+            document.getElementById('input-goal-kcal').value = goals.kcal;
+            document.getElementById('input-goal-pro').value = goals.pro; document.getElementById('slider-goal-pro').value = goals.pro;
             document.getElementById('input-goal-carb').value = goals.carb; document.getElementById('slider-goal-carb').value = goals.carb;
             document.getElementById('input-goal-fat').value = goals.fat; document.getElementById('slider-goal-fat').value = goals.fat;
             document.getElementById('input-goal-na').value = goals.na; document.getElementById('slider-goal-na').value = goals.na;
@@ -468,97 +556,104 @@
         }
 
         function generateMeals() {
-            const goals = { kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal, pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro, carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb, fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat, na: parseInt(localStorage.getItem('goal_na')) || defaultGoals.na, ka: parseInt(localStorage.getItem('goal_ka')) || defaultGoals.ka };
+            let preset = localStorage.getItem(getKey('active_preset')) || "low";
+            const goals = { 
+                kcal: parseInt(localStorage.getItem(getKey('goal_kcal'))) || profiles[preset].kcal, 
+                pro: parseInt(localStorage.getItem(getKey('goal_pro'))) || profiles[preset].pro, 
+                carb: parseInt(localStorage.getItem(getKey('goal_carb'))) || profiles[preset].carb, 
+                fat: parseInt(localStorage.getItem(getKey('goal_fat'))) || profiles[preset].fat, 
+                na: parseInt(localStorage.getItem(getKey('goal_na'))) || profiles[preset].na, 
+                ka: parseInt(localStorage.getItem(getKey('goal_ka'))) || profiles[preset].ka 
+            };
+            
             let remPro = Math.max(0, goals.pro - currentEaten.pro); let remCarb = Math.max(0, goals.carb - currentEaten.carb); let remFat = Math.max(0, goals.fat - currentEaten.fat); let remKcal = Math.max(0, goals.kcal - currentEaten.kcal);
             let remNa = Math.max(0, goals.na - currentEaten.na); let remKa = Math.max(0, goals.ka - currentEaten.ka);
             
             const container = document.getElementById('options-container'); generatedOptions = [];
 
-            // 1. Kalorien Voll Modus (Elektrolyt-Ausgleich)
             if (remKcal <= 50) {
                 if (isExpert && remNa > 300) {
                     let saltGrams = Math.round(remNa / db.salz.na);
-                    if (saltGrams > 0) {
-                        generatedOptions.push({ title: "Elektrolyt-Ausgleich", items: [{ id: 'salz', name: db.salz.n, grams: saltGrams }] });
-                        container.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-size:13px;">Deine Makros sind voll. Hier ist dein fehlendes Salz:</p>` + renderOptions(generatedOptions, goals);
-                    }
-                    if (remKa > 500) {
-                        container.innerHTML += `<div style="text-align:center; font-size:12px; color:var(--warning); margin-top:8px;">Tipp: Dir fehlen noch ${remKa}mg Kalium. Nutze ein kalorienfreies Supplement!</div>`;
-                    }
-                } else {
-                    container.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px; text-align: center; padding: 20px;">Alle Makros erfüllt! 💪</div>`;
-                }
+                    if (saltGrams > 0) generatedOptions.push({ title: "Elektrolyt-Ausgleich", items: [{ id: 'salz', name: db.salz.n, grams: saltGrams }] });
+                    container.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-size:13px;">Makros voll. Salz-Ausgleich:</p>` + renderOptions(generatedOptions, goals);
+                } else { container.innerHTML = `<div style="color: var(--electro); font-weight: bold; font-size: 18px; text-align: center; padding: 20px;">Ziele erfüllt! 💪</div>`; }
                 return;
             }
 
-            // Normaler Modus (Makros + Elektrolyte skalieren)
+            // --- Smarter Trainings- & Mealtiming-Filter ---
+            let isTrainingDay = (localStorage.getItem(getKey('workout_type')) || "none") !== "none";
+            let workoutTimeStr = localStorage.getItem(getKey('workout_time')) || "";
+            
+            // Feste Workout-Ernährung Blöcke reservieren wenn Training eingetragen ist
+            let preWorkoutReserved = { pro: 40, carb: 60, fat: 0, na: 1500 };
+            let postWorkoutReserved = { pro: 40, carb: 80, fat: 0, na: 500 };
+
+            // Optionen befüllen
             let targetKcal = Math.min(remKcal, 750); 
             let factor = targetKcal / ((remPro * 4) + (remCarb * 4) + (remFat * 9));
             let mealPro = remPro * factor; let mealCarb = remCarb * factor; let mealFat = remFat * factor;
             let mealNa = remNa * factor; let mealKa = remKa * factor;
+
+            // Option A: PRE-WORKOUT SPEC (Wird eingeblendet wenn Training ansteht)
+            if(isTrainingDay && workoutTimeStr) {
+                generatedOptions.push({
+                    title: `🔥 Pre-Workout Spec (90 Min vor Fokus)`,
+                    items: [
+                        { id: 'whey_dm', name: db.whey_dm.n, grams: 50 },
+                        { id: 'maiswaffeln', name: db.maiswaffeln.n, grams: 75 },
+                        { id: 'salz', name: "Salz (Pump-Aktivator)", grams: 3 }
+                    ]
+                });
+                
+                generatedOptions.push({
+                    title: `💪 Post-Workout Spec (Anaboles Fenster)`,
+                    items: [
+                        { id: 'putenhack', name: db.putenhack.n, grams: 200 },
+                        { id: 'reis', name: db.reis.n, grams: 100 }
+                    ]
+                });
+            }
 
             // OPTION 1: Herzhaft (Reis)
             let o1_g_gemuese = (mealCarb > 10 && mealPro > 5) ? 150 : 0; 
             let o1_c_left = Math.max(0, mealCarb - (o1_g_gemuese * db.tk_gemuese.c)); let o1_g_reis = round(o1_c_left / db.reis.c, 5); 
             let o1_p_left = Math.max(0, mealPro - (o1_g_gemuese * db.tk_gemuese.p) - (o1_g_reis * db.reis.p)); let o1_g_pute = round(o1_p_left / db.putenhack.p, 10); 
             let o1_f_left = Math.max(0, mealFat - (o1_g_gemuese * db.tk_gemuese.f) - (o1_g_reis * db.reis.f) - (o1_g_pute * db.putenhack.f)); let o1_g_oil = round(o1_f_left / db.olivenoel.f, 5); 
-
             let o1_items = [];
             if(o1_g_pute > 0) o1_items.push({ id: 'putenhack', name: db.putenhack.n, grams: o1_g_pute });
             if(o1_g_reis > 0) o1_items.push({ id: 'reis', name: db.reis.n, grams: o1_g_reis });
             if(o1_g_gemuese > 0) o1_items.push({ id: 'tk_gemuese', name: db.tk_gemuese.n, grams: o1_g_gemuese });
             if(o1_g_oil > 0) o1_items.push({ id: 'olivenoel', name: db.olivenoel.n, grams: o1_g_oil });
-            
-            // Auto-Salzen
             if(isExpert) {
                 let currentNa = o1_items.reduce((s, i) => s + (i.grams * db[i.id].na), 0);
-                if(mealNa - currentNa > 100) {
-                    let sG = Math.round((mealNa - currentNa) / db.salz.na);
-                    if(sG > 0) o1_items.push({ id: 'salz', name: db.salz.n, grams: sG });
-                }
+                if(mealNa - currentNa > 100) { let sG = Math.round((mealNa - currentNa) / db.salz.na); if(sG > 0) o1_items.push({ id: 'salz', name: db.salz.n, grams: sG }); }
             }
             if(o1_items.length > 0) generatedOptions.push({ title: "Herzhaftes Menü (Reis)", items: o1_items });
 
-            // OPTION 3: Kalium-Boost (Kartoffeln)
+            // OPTION 2: Kalium-Boost (Kartoffeln)
             if(isExpert && mealKa > 800 && mealCarb > 20) {
                 let o3_c_left = Math.max(0, mealCarb - (o1_g_gemuese * db.tk_gemuese.c)); let o3_g_kart = round(o3_c_left / db.kartoffeln.c, 10);
                 let o3_p_left = Math.max(0, mealPro - (o1_g_gemuese * db.tk_gemuese.p) - (o3_g_kart * db.kartoffeln.p)); let o3_g_pute = round(o3_p_left / db.putenhack.p, 10);
                 let o3_f_left = Math.max(0, mealFat - (o1_g_gemuese * db.tk_gemuese.f) - (o3_g_kart * db.kartoffeln.f) - (o3_g_pute * db.putenhack.f)); let o3_g_oil = round(o3_f_left / db.olivenoel.f, 5);
-                
                 let o3_items = [];
                 if(o3_g_pute > 0) o3_items.push({ id: 'putenhack', name: db.putenhack.n, grams: o3_g_pute });
                 if(o3_g_kart > 0) o3_items.push({ id: 'kartoffeln', name: db.kartoffeln.n, grams: o3_g_kart });
                 if(o1_g_gemuese > 0) o3_items.push({ id: 'tk_gemuese', name: db.tk_gemuese.n, grams: o1_g_gemuese });
                 if(o3_g_oil > 0) o3_items.push({ id: 'olivenoel', name: db.olivenoel.n, grams: o3_g_oil });
-                
-                let currentNa = o3_items.reduce((s, i) => s + (i.grams * db[i.id].na), 0);
-                if(mealNa - currentNa > 100) {
-                    let sG = Math.round((mealNa - currentNa) / db.salz.na);
-                    if(sG > 0) o3_items.push({ id: 'salz', name: db.salz.n, grams: sG });
-                }
-                if(o3_items.length > 0) generatedOptions.push({ title: "Kalium-Boost (Kartoffeln)", items: o3_items });
+                if(o3_items.length > 0) generatedOptions.push({ title: "Kalium-Boost (Volumen-Mahlzeit)", items: o3_items });
             }
 
-            // OPTION 2: Süß
+            // OPTION 3: Süß
             let o2_g_chia = round(Math.min(25, mealFat / db.chiasamen.f), 5); 
             let o2_c_left = Math.max(0, mealCarb - (o2_g_chia * db.chiasamen.c)); let o2_g_oats = round(o2_c_left / db.haferflocken.c, 5); 
             let o2_p_left = Math.max(0, mealPro - (o2_g_chia * db.chiasamen.p) - (o2_g_oats * db.haferflocken.p)); let o2_g_skyr = round(o2_p_left / db.skyr.p, 10); 
-
             let o2_items = [];
             if(o2_g_skyr > 0) o2_items.push({ id: 'skyr', name: db.skyr.n, grams: o2_g_skyr });
             if(o2_g_oats > 0) o2_items.push({ id: 'haferflocken', name: db.haferflocken.n, grams: o2_g_oats });
             if(o2_g_chia > 0) o2_items.push({ id: 'chiasamen', name: db.chiasamen.n, grams: o2_g_chia });
-            
-            if(isExpert) {
-                let currentNa = o2_items.reduce((s, i) => s + (i.grams * db[i.id].na), 0);
-                if(mealNa - currentNa > 100) {
-                    let sG = Math.round((mealNa - currentNa) / db.salz.na);
-                    if(sG > 0) o2_items.push({ id: 'salz', name: "Salz (Prise)", grams: sG });
-                }
-            }
-            if(o2_items.length > 0) generatedOptions.push({ title: "Süßes Menü", items: o2_items });
+            if(o2_items.length > 0) generatedOptions.push({ title: "Süßes Menü (Skyr / Oats)", items: o2_items });
 
-            container.innerHTML = `<p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Auf ~${Math.round(targetKcal)} kcal für dich skaliert:</p>` + renderOptions(generatedOptions, goals);
+            container.innerHTML = `<p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px;">Gesteuert nach deinem Tagesprofil:</p>` + renderOptions(generatedOptions, goals);
         }
 
         function renderOptions(options, goals) {
@@ -599,39 +694,6 @@
             }).join('');
         }
 
-        function getOptionsForCategory(category, selectedId) {
-            let options = '';
-            for (let key in db) { if (db[key].cat === category) { options += `<option value="${key}" ${key === selectedId ? 'selected' : ''}>${db[key].n}</option>`; } }
-            return options;
-        }
-
-        function renderEditInputs() {
-            let inputsHtml = '';
-            currentEditMeal.items.forEach((item, i) => {
-                let cat = db[item.id].cat;
-                inputsHtml += `
-                    <div class="edit-input-group">
-                        <select class="edit-swap-select cat-select" onchange="changeItemCategory(${i}, this.value)">
-                            <option value="pro" ${cat === 'pro' ? 'selected' : ''}>Kategorie: Protein (${emojis.pro})</option>
-                            <option value="carb" ${cat === 'carb' ? 'selected' : ''}>Kategorie: Kohlenhydrate (${emojis.carb})</option>
-                            <option value="fat" ${cat === 'fat' ? 'selected' : ''}>Kategorie: Fett (${emojis.fat})</option>
-                            <option value="extra" ${cat === 'extra' ? 'selected' : ''}>Kategorie: Extras (Salz...)</option>
-                        </select>
-                        <div class="edit-input-wrapper">
-                            <select class="edit-swap-select" style="margin-bottom:0; width:60%;" onchange="swapEditItem(${i}, this.value)">${getOptionsForCategory(cat, item.id)}</select>
-                            <div style="display:flex; align-items:center;">
-                                <input type="number" value="${item.grams}" oninput="updateEditItem(${i}, this.value)">
-                                <span style="color: var(--text-muted); font-size:15px; font-weight:600;">g</span>
-                                <button class="btn-remove-ingredient" onclick="removeEditItem(${i})">🗑️</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            inputsHtml += `<button class="btn-add-ingredient" onclick="addEditItem()">+ Zutat hinzufügen</button>`;
-            document.getElementById('edit-meal-inputs').innerHTML = inputsHtml;
-        }
-
         function openNewEditMeal(index) { editingHistoryIndex = -1; closeModal('mealModal'); currentEditMeal = JSON.parse(JSON.stringify(generatedOptions[index])); document.getElementById('edit-meal-title').innerText = currentEditMeal.title; renderEditInputs(); updateEditMacros(); document.getElementById('editModal').style.display = 'flex'; setTimeout(() => document.getElementById('editModal').style.opacity = '1', 10); }
         function editHistoryItem(index) { let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || []; let item = history[index]; if(!item.items) { alert("Alte Mahlzeit nicht bearbeitbar."); return; } editingHistoryIndex = index; currentEditMeal = JSON.parse(JSON.stringify(item)); document.getElementById('edit-meal-title').innerText = currentEditMeal.title || "Mahlzeit anpassen"; renderEditInputs(); updateEditMacros(); document.getElementById('editModal').style.display = 'flex'; setTimeout(() => document.getElementById('editModal').style.opacity = '1', 10); }
         function addEditItem() { let defaultId = getFirstIdForCat('pro'); currentEditMeal.items.push({ id: defaultId, name: db[defaultId].n, grams: 0 }); renderEditInputs(); updateEditMacros(); }
@@ -645,11 +707,11 @@
             currentEditMeal.items.forEach(item => { let food = db[item.id]; totalPro += item.grams * food.p; totalCarb += item.grams * food.c; totalFat += item.grams * food.f; totalKcal += item.grams * food.k; totalNa += item.grams * food.na; totalKa += item.grams * food.ka; });
             currentEditMeal.pro = Math.round(totalPro); currentEditMeal.carb = Math.round(totalCarb); currentEditMeal.fat = Math.round(totalFat); currentEditMeal.kcal = Math.round(totalKcal); currentEditMeal.na = Math.round(totalNa); currentEditMeal.ka = Math.round(totalKa);
             
-            const goals = { kcal: parseInt(localStorage.getItem('goal_kcal')) || defaultGoals.kcal, pro: parseInt(localStorage.getItem('goal_pro')) || defaultGoals.pro, carb: parseInt(localStorage.getItem('goal_carb')) || defaultGoals.carb, fat: parseInt(localStorage.getItem('goal_fat')) || defaultGoals.fat, na: parseInt(localStorage.getItem('goal_na')) || defaultGoals.na, ka: parseInt(localStorage.getItem('goal_ka')) || defaultGoals.ka };
+            let preset = localStorage.getItem(getKey('active_preset')) || "low";
+            const goals = { kcal: parseInt(localStorage.getItem(getKey('goal_kcal'))) || profiles[preset].kcal, pro: parseInt(localStorage.getItem(getKey('goal_pro'))) || profiles[preset].pro, carb: parseInt(localStorage.getItem(getKey('goal_carb'))) || profiles[preset].carb, fat: parseInt(localStorage.getItem(getKey('goal_fat'))) || profiles[preset].fat, na: parseInt(localStorage.getItem(getKey('goal_na'))) || profiles[preset].na, ka: parseInt(localStorage.getItem(getKey('goal_ka'))) || profiles[preset].ka };
             let bKcal = currentEaten.kcal; let bPro = currentEaten.pro; let bCarb = currentEaten.carb; let bFat = currentEaten.fat; let bNa = currentEaten.na; let bKa = currentEaten.ka;
             
             if (editingHistoryIndex >= 0) { let oldItem = JSON.parse(localStorage.getItem(getKey('food_history')))[editingHistoryIndex]; bKcal = Math.max(0, bKcal - oldItem.kcal); bPro = Math.max(0, bPro - oldItem.pro); bCarb = Math.max(0, bCarb - oldItem.carb); bFat = Math.max(0, bFat - oldItem.fat); bNa = Math.max(0, bNa - (oldItem.na||0)); bKa = Math.max(0, bKa - (oldItem.ka||0)); }
-            
             let aKcal = goals.kcal - bKcal - currentEditMeal.kcal; let aPro = goals.pro - bPro - currentEditMeal.pro; let aCarb = goals.carb - bCarb - currentEditMeal.carb; let aFat = goals.fat - bFat - currentEditMeal.fat; let aNa = goals.na - bNa - currentEditMeal.na; let aKa = goals.ka - bKa - currentEditMeal.ka;
 
             let expertHtmlTop = isExpert ? `<span>🧂 ${currentEditMeal.na}mg</span> &nbsp;|&nbsp; <span>🍌 ${currentEditMeal.ka}mg</span>` : '';
@@ -694,7 +756,7 @@
                 localStorage.setItem(getKey('eaten_kcal'), currentEaten.kcal + currentEditMeal.kcal);
                 localStorage.setItem(getKey('eaten_pro'), currentEaten.pro + currentEditMeal.pro);
                 localStorage.setItem(getKey('eaten_carb'), currentEaten.carb + currentEditMeal.carb);
-                localStorage.setItem(getKey('eaten_fat'), currentEaten.fat + currentEditMeal.fat);
+                localStorage.setItem(getKey('eaten_fat'), varFat = currentEaten.fat + currentEditMeal.fat);
                 localStorage.setItem(getKey('eaten_na'), currentEaten.na + currentEditMeal.na);
                 localStorage.setItem(getKey('eaten_ka'), currentEaten.ka + currentEditMeal.ka);
                 history.push({ name: finalName, title: currentEditMeal.title, kcal: currentEditMeal.kcal, pro: currentEditMeal.pro, carb: currentEditMeal.carb, fat: currentEditMeal.fat, na: currentEditMeal.na, ka: currentEditMeal.ka, items: validItems });
@@ -708,7 +770,7 @@
         function closeModal(id) { const modal = document.getElementById(id); modal.style.opacity = '0'; setTimeout(() => modal.style.display = 'none', 200); }
         
         function saveEmojis() { emojis.pro = document.getElementById('sel-emoji-pro').value; emojis.carb = document.getElementById('sel-emoji-carb').value; emojis.fat = document.getElementById('sel-emoji-fat').value; localStorage.setItem('emoji_pro', emojis.pro); localStorage.setItem('emoji_carb', emojis.carb); localStorage.setItem('emoji_fat', emojis.fat); loadData(); closeModal('emojiModal'); }
-        function saveGoals() { localStorage.setItem('goal_kcal', document.getElementById('input-goal-kcal').value); localStorage.setItem('goal_pro', document.getElementById('input-goal-pro').value); localStorage.setItem('goal_carb', document.getElementById('input-goal-carb').value); localStorage.setItem('goal_fat', document.getElementById('input-goal-fat').value); localStorage.setItem('goal_na', document.getElementById('input-goal-na').value); localStorage.setItem('goal_ka', document.getElementById('input-goal-ka').value); loadData(); closeModal('settingsModal'); }
+        function saveGoals() { localStorage.setItem(getKey('goal_kcal'), document.getElementById('input-goal-kcal').value); localStorage.setItem(getKey('goal_pro'), document.getElementById('input-goal-pro').value); localStorage.setItem(getKey('goal_carb'), document.getElementById('input-goal-carb').value); localStorage.setItem(getKey('goal_fat'), document.getElementById('input-goal-fat').value); localStorage.setItem(getKey('goal_na'), document.getElementById('input-goal-na').value); localStorage.setItem(getKey('goal_ka'), document.getElementById('input-goal-ka').value); loadData(); closeModal('settingsModal'); }
 
         updateDateDisplay(); applyExpertUI();
     </script>
