@@ -35,9 +35,10 @@
         .btn-settings { color: var(--accent); font-size: 16px; font-weight: 600; background: none; border: none; cursor: pointer; padding: 0; }
         .btn-gear { font-size: 24px; background: none; border: none; cursor: pointer; padding: 0; color: var(--text-muted); }
         
-        .preset-selector { display: flex; background: #E5E5EA; padding: 2px; border-radius: 9px; margin-bottom: 16px; }
+        .preset-selector { display: flex; background: #E5E5EA; padding: 2px; border-radius: 9px; margin-bottom: 16px; transition: 0.3s; }
         .preset-tab { flex: 1; text-align: center; padding: 6px 0; font-size: 13px; font-weight: 600; border-radius: 7px; cursor: pointer; color: var(--text-main); transition: background 0.15s; }
         .preset-tab.active { background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .hidden { display: none !important; }
 
         .card { background-color: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
@@ -84,6 +85,8 @@
         .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .input-header label { font-size: 15px; font-weight: 500; margin: 0; }
         .input-header input[type=number], .input-header input[type=text], .input-header select { width: 90px; padding: 6px; border: 1px solid #E5E5EA; border-radius: 8px; font-size: 16px; text-align: center; background: var(--bg-color); font-weight: 600; color: var(--accent); }
+        .full-width-select { width: 100% !important; margin-top: 8px; }
+        
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]:focus { outline: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; margin-top: -10px; }
@@ -94,6 +97,7 @@
 
         .btn-save { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; margin-top: 10px; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 16px; width: 100%; padding: 12px; border: none; margin-top: 5px; cursor: pointer;}
+        .btn-calc-expert { background: none; color: var(--accent); border: 2px solid var(--accent); padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 6px; }
 
         .history-item-container { position: relative; margin-bottom: 12px; border-radius: 14px; overflow: hidden; background: var(--danger); }
         .history-card { background: var(--card-bg); padding: 16px; position: relative; z-index: 2; transition: transform 0.2s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border-radius: 14px; }
@@ -110,8 +114,6 @@
         .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
-        .expert-hidden { display: none !important; }
-        .btn-calc-expert { background: none; color: var(--accent); border: 2px solid var(--accent); padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
@@ -133,10 +135,9 @@
         </div>
     </div>
 
-    <div class="preset-selector">
+    <div class="preset-selector hidden" id="carb-cycling-tabs">
         <div class="preset-tab" id="tab-low" onclick="selectPreset('low')">Low Carb</div>
         <div class="preset-tab" id="tab-high" onclick="selectPreset('high')">High Carb</div>
-        <div class="preset-tab" id="tab-rest" onclick="selectPreset('rest')">Rest Day</div>
     </div>
 
     <div class="card" style="padding: 16px;">
@@ -181,7 +182,7 @@
         </div>
     </div>
 
-    <div class="macro-grid-expert expert-hidden" id="expert-dashboard">
+    <div class="macro-grid-expert hidden" id="expert-dashboard">
         <div class="macro-box">
             <div class="macro-title">Natrium</div>
             <div class="macro-value val-na"><span id="display-na-eaten">0</span>mg</div>
@@ -224,6 +225,7 @@
     
     <div id="history-list"></div>
 
+    <!-- Modals -->
     <div class="modal-overlay" id="mealModal">
         <div class="modal">
             <h2>Vorschläge</h2>
@@ -245,7 +247,24 @@
     <div class="modal-overlay" id="emojiModal">
         <div class="modal">
             <h2>App Einstellungen</h2>
-            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top:-10px; margin-bottom: 20px;">Passe die App an deine Vorlieben an.</p>
+            
+            <div class="expert-toggle-container" style="margin-top:0;">
+                <div>
+                    <div style="font-weight: 600; font-size: 15px;">Carb-Cycling aktivieren</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">High / Low Carb Tage trennen</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="cycling-toggle" onchange="toggleCycling()"><span class="slider"></span></label>
+            </div>
+
+            <div class="expert-toggle-container">
+                <div>
+                    <div style="font-weight: 600; font-size: 15px;">Expertenmodus</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Natrium & Kalium tracken</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="expert-toggle" onchange="toggleExpertMode()"><span class="slider"></span></label>
+            </div>
+
+            <p style="font-size: 14px; color: var(--text-muted); text-align: center; margin-top: 20px; margin-bottom: 10px;">Anzeige Emojis</p>
             <div class="edit-input-group" style="padding-bottom: 8px;">
                 <label style="font-size: 14px; color: var(--text-muted); margin-bottom: 6px;">Protein Icon</label>
                 <select class="edit-swap-select" id="sel-emoji-pro">
@@ -264,22 +283,62 @@
                     <option value="🥑">🥑 Avocado</option><option value="🧈">🧈 Butter</option><option value="🥜">🥜 Erdnuss</option>
                 </select>
             </div>
-            <div class="expert-toggle-container">
-                <div>
-                    <div style="font-weight: 600; font-size: 15px;">Expertenmodus</div>
-                    <div style="font-size: 12px; color: var(--text-muted);">Natrium & Kalium tracken</div>
-                </div>
-                <label class="switch"><input type="checkbox" id="expert-toggle" onchange="toggleExpertMode()"><span class="slider"></span></label>
-            </div>
+            
             <button class="btn-save" style="margin-top: 20px;" onclick="saveEmojis()">Speichern</button>
             <button class="btn-cancel" onclick="closeModal('emojiModal')">Schließen</button>
         </div>
     </div>
 
+    <!-- Neuer Auto-Calc Modal -->
+    <div class="modal-overlay" id="calcModal">
+        <div class="modal">
+            <h2>🧠 Smart Setup</h2>
+            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top:-15px;">Berechnet exakt deinen perfekten Split.</p>
+            
+            <div class="input-group">
+                <div class="input-header"><label>Alter</label><input type="number" id="calc-age" value="22"></div>
+            </div>
+            <div class="input-group">
+                <div class="input-header"><label>Größe (cm)</label><input type="number" id="calc-height" value="159"></div>
+            </div>
+            <div class="input-group">
+                <div class="input-header"><label>Gewicht (kg)</label><input type="number" id="calc-weight" value="70"></div>
+            </div>
+
+            <div class="input-group" style="display:flex; flex-direction:column;">
+                <label style="font-size: 15px; font-weight: 500;">Aktivität (NEAT & Training)</label>
+                <select class="edit-swap-select full-width-select" id="calc-activity">
+                    <option value="1.2">Wenig (Sitzend, kaum Schritte)</option>
+                    <option value="1.375">Leicht (Alltag + 5k-8k Schritte)</option>
+                    <option value="1.55" selected>Moderat (Training + 8k-10k Schritte)</option>
+                    <option value="1.725">Hoch (Hartes Training + 12k+ Schritte)</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="display:flex; flex-direction:column;">
+                <label style="font-size: 15px; font-weight: 500;">Aktuelles Ziel</label>
+                <select class="edit-swap-select full-width-select" id="calc-goal">
+                    <option value="0.25">Aufbau: +0,25 kg / Woche</option>
+                    <option value="0">Gewicht halten</option>
+                    <option value="-0.25">Diät: -0,25 kg / Woche</option>
+                    <option value="-0.5" selected>Diät: -0,5 kg / Woche (Standard)</option>
+                    <option value="-0.75">Diät: -0,75 kg / Woche</option>
+                    <option value="-1.0">Diät: -1,0 kg / Woche (Hardcore)</option>
+                </select>
+            </div>
+
+            <button class="btn-save" onclick="runSmartCalculation()">Berechnen & Anwenden</button>
+            <button class="btn-cancel" onclick="closeModal('calcModal')">Abbrechen</button>
+        </div>
+    </div>
+
+    <!-- Macro Settings Modal -->
     <div class="modal-overlay" id="settingsModal">
         <div class="modal">
             <h2>Makro Profile editieren</h2>
-            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top:-15px;">Passe die Eckdaten deines aktuellen Profils an:</p>
+            <button class="btn-calc-expert" onclick="openCalcModal()">🧠 Auto-Berechnen (Körperdaten)</button>
+            <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 5px;">Manuelle Anpassung für aktuelles Profil:</p>
+            
             <div class="input-group">
                 <div class="input-header"><label>Kalorien (kcal)</label><input type="number" id="input-goal-kcal" disabled style="background: transparent; border: none; font-size: 20px; color: var(--text-main);"></div>
             </div>
@@ -295,8 +354,8 @@
                 <div class="input-header"><label>Fett (g)</label><input type="number" id="input-goal-fat" oninput="sync('fat', 'input')"></div>
                 <input type="range" id="slider-goal-fat" min="0" max="200" step="1" oninput="sync('fat', 'slider')">
             </div>
-            <div id="expert-settings" class="expert-hidden" style="border-top: 1px solid #E5E5EA; padding-top: 16px; margin-top: 16px;">
-                <button class="btn-calc-expert" onclick="calcElectroGoals()"><span>⚡ Vaskularitäts-Ziele auto-berechnen</span></button>
+            <div id="expert-settings" class="hidden" style="border-top: 1px solid #E5E5EA; padding-top: 16px; margin-top: 16px;">
+                <button class="btn-calc-expert" style="margin-top: 10px;" onclick="calcElectroGoals()"><span>⚡ Vaskularitäts-Ziele auto-berechnen</span></button>
                 <div class="input-group">
                     <div class="input-header"><label>Natrium (mg)</label><input type="number" id="input-goal-na" oninput="sync('na', 'input')"></div>
                     <input type="range" id="slider-goal-na" min="0" max="10000" step="50" oninput="sync('na', 'slider')">
@@ -311,6 +370,7 @@
         </div>
     </div>
 
+    <!-- Water Settings Modal -->
     <div class="modal-overlay" id="waterModal">
         <div class="modal">
             <h2>Wasser Einstellungen</h2>
@@ -333,11 +393,11 @@
         let currentDateStr = ""; 
         const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
 
-        // Realistische Defizit Standard-Werte für ~70kg
-        const profiles = {
-            low:  { kcal: 2500, pro: 180, carb: 230, fat: 85,  na: 4550, ka: 5250 },
-            high: { kcal: 2700, pro: 180, carb: 380, fat: 50,  na: 4550, ka: 5250 },
-            rest: { kcal: 2200, pro: 180, carb: 120, fat: 90,  na: 4000, ka: 4500 }
+        // Initiale Default-Profile (werden überschrieben durch Smart-Calc)
+        let profiles = {
+            standard: { kcal: 2600, pro: 180, carb: 300, fat: 75, na: 4500, ka: 5000 },
+            low:  { kcal: 2500, pro: 180, carb: 230, fat: 85,  na: 4500, ka: 5000 },
+            high: { kcal: 2700, pro: 180, carb: 380, fat: 50,  na: 4500, ka: 5000 }
         };
 
         let currentEaten = { kcal: 0, pro: 0, carb: 0, fat: 0, na: 0, ka: 0 };
@@ -345,9 +405,11 @@
         let generatedOptions = []; 
         let currentEditMeal = null; 
         let editingHistoryIndex = -1; 
-        let activePreset = "low";
-
+        
         let isExpert = localStorage.getItem('expert_mode') === 'true';
+        let useCycling = localStorage.getItem('carb_cycling') !== 'false'; // Default true
+        let activePreset = localStorage.getItem('active_preset') || "low";
+        
         let emojis = { pro: localStorage.getItem('emoji_pro') || '🥩', carb: localStorage.getItem('emoji_carb') || '🍚', fat: localStorage.getItem('emoji_fat') || '🥑' };
 
         const db = {
@@ -381,29 +443,84 @@
         function formatDiff(val) { return val < 0 ? `<span style="color: var(--danger); font-weight: 700;">${val}</span>` : val; }
 
         function toggleExpertMode() { isExpert = document.getElementById('expert-toggle').checked; localStorage.setItem('expert_mode', isExpert); applyExpertUI(); }
-        function applyExpertUI() { if(isExpert) { document.getElementById('expert-dashboard').classList.remove('expert-hidden'); document.getElementById('expert-settings').classList.remove('expert-hidden'); } else { document.getElementById('expert-dashboard').classList.add('expert-hidden'); document.getElementById('expert-settings').classList.add('expert-hidden'); } }
+        function toggleCycling() { 
+            useCycling = document.getElementById('cycling-toggle').checked; 
+            localStorage.setItem('carb_cycling', useCycling); 
+            applyExpertUI(); 
+            if(!useCycling) { selectPreset('standard'); } else { selectPreset('low'); }
+        }
+
+        function applyExpertUI() { 
+            if(isExpert) { document.getElementById('expert-dashboard').classList.remove('hidden'); document.getElementById('expert-settings').classList.remove('hidden'); } else { document.getElementById('expert-dashboard').classList.add('hidden'); document.getElementById('expert-settings').classList.add('hidden'); } 
+            if(useCycling) { document.getElementById('carb-cycling-tabs').classList.remove('hidden'); } else { document.getElementById('carb-cycling-tabs').classList.add('hidden'); }
+        }
 
         function selectPreset(p) {
             activePreset = p;
-            localStorage.setItem(getKey('active_preset'), p);
-            
-            if(!localStorage.getItem(`${p}_goal_kcal`)) {
-                localStorage.setItem(`${p}_goal_kcal`, profiles[p].kcal);
-                localStorage.setItem(`${p}_goal_pro`, profiles[p].pro);
-                localStorage.setItem(`${p}_goal_carb`, profiles[p].carb);
-                localStorage.setItem(`${p}_goal_fat`, profiles[p].fat);
-                localStorage.setItem(`${p}_goal_na`, profiles[p].na);
-                localStorage.setItem(`${p}_goal_ka`, profiles[p].ka);
-            }
-            
+            localStorage.setItem('active_preset', p);
             document.querySelectorAll('.preset-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${p}`).classList.add('active');
+            if(useCycling) { document.getElementById(`tab-${p}`).classList.add('active'); }
             loadData();
         }
 
         function saveWorkoutPlan() {
             localStorage.setItem(getKey('workout_type'), document.getElementById('select-workout').value);
             localStorage.setItem(getKey('workout_time'), document.getElementById('input-workout-time').value);
+            loadData();
+        }
+
+        function openCalcModal() {
+            document.getElementById('calc-weight').value = localStorage.getItem('user_weight') || 70;
+            document.getElementById('calcModal').style.display = 'flex'; setTimeout(() => document.getElementById('calcModal').style.opacity = '1', 10);
+            closeModal('settingsModal');
+        }
+
+        function runSmartCalculation() {
+            let age = parseInt(document.getElementById('calc-age').value) || 22;
+            let height = parseInt(document.getElementById('calc-height').value) || 159;
+            let weight = parseFloat(document.getElementById('calc-weight').value) || 70;
+            let activity = parseFloat(document.getElementById('calc-activity').value) || 1.55;
+            let goalDiff = parseFloat(document.getElementById('calc-goal').value) || 0; 
+            
+            localStorage.setItem('user_weight', weight); // Sync with water
+
+            // Mifflin-St Jeor Formel (Men)
+            let bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            let tdee = bmr * activity;
+            
+            // 7000kcal = 1kg Fett. Tägliches Defizit = (Ziel in kg * 7000) / 7
+            let dailyKcalDiff = (goalDiff * 7000) / 7;
+            let targetKcal = Math.round(tdee + dailyKcalDiff); 
+            
+            // Bodybuilding Core Macros
+            let basePro = Math.round(weight * 2.2);
+            let baseFat = Math.round(weight * 0.8);
+            let baseCarb = Math.round((targetKcal - (basePro * 4) - (baseFat * 9)) / 4);
+
+            if (useCycling) {
+                // High Carb: +200 kcal (Fett runter auf 0.6g/kg, Carbs rauf)
+                let highKcal = targetKcal + 200;
+                let highFat = Math.round(weight * 0.6);
+                let highCarb = Math.round((highKcal - (basePro*4) - (highFat*9))/4);
+                
+                // Low Carb: -150 kcal (Fett rauf auf 1.0g/kg, Carbs runter)
+                let lowKcal = targetKcal - 150;
+                let lowFat = Math.round(weight * 1.0);
+                let lowCarb = Math.round((lowKcal - (basePro*4) - (lowFat*9))/4);
+
+                profiles.high.kcal = highKcal; profiles.high.pro = basePro; profiles.high.carb = highCarb; profiles.high.fat = highFat;
+                profiles.low.kcal = lowKcal; profiles.low.pro = basePro; profiles.low.carb = lowCarb; profiles.low.fat = lowFat;
+                
+                localStorage.setItem(`high_goal_kcal`, highKcal); localStorage.setItem(`high_goal_pro`, basePro); localStorage.setItem(`high_goal_carb`, highCarb); localStorage.setItem(`high_goal_fat`, highFat);
+                localStorage.setItem(`low_goal_kcal`, lowKcal); localStorage.setItem(`low_goal_pro`, basePro); localStorage.setItem(`low_goal_carb`, lowCarb); localStorage.setItem(`low_goal_fat`, lowFat);
+                
+            } else {
+                profiles.standard.kcal = targetKcal; profiles.standard.pro = basePro; profiles.standard.carb = baseCarb; profiles.standard.fat = baseFat;
+                localStorage.setItem(`standard_goal_kcal`, targetKcal); localStorage.setItem(`standard_goal_pro`, basePro); localStorage.setItem(`standard_goal_carb`, baseCarb); localStorage.setItem(`standard_goal_fat`, baseFat);
+            }
+
+            alert("🧠 Smart Berechnung erfolgreich!\n\nTDEE: " + Math.round(tdee) + " kcal\nNeues Ø Tagesziel: " + targetKcal + " kcal\nProtein fixiert auf 2,2g/kg ("+basePro+"g)");
+            closeModal('calcModal');
             loadData();
         }
 
@@ -424,9 +541,12 @@
             document.getElementById('display-date').innerText = isToday ? `Heute, ${d}.${m}.` : `${dayName} ${d}.${m}.${y}`;
             document.getElementById('native-date-picker').value = currentDateStr; 
             
-            activePreset = localStorage.getItem(getKey('active_preset')) || "low";
-            document.querySelectorAll('.preset-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${activePreset}`).classList.add('active');
+            if(useCycling) {
+                activePreset = localStorage.getItem('active_preset') || "low";
+                if(activePreset === "standard") activePreset = "low";
+                document.querySelectorAll('.preset-tab').forEach(el => el.classList.remove('active'));
+                document.getElementById(`tab-${activePreset}`).classList.add('active');
+            } else { activePreset = "standard"; }
 
             document.getElementById('select-workout').value = localStorage.getItem(getKey('workout_type')) || "none";
             document.getElementById('input-workout-time').value = localStorage.getItem(getKey('workout_time')) || "";
@@ -441,7 +561,7 @@
         let wTimer, wFired = false;
         function wStart(num) { wFired = false; wTimer = setTimeout(() => { wFired = true; let current = num === 1 ? (localStorage.getItem('water_btn_1') || 250) : (localStorage.getItem('water_btn_2') || 500); let newVal = prompt(`Menge (ml):`, current); if(newVal && !isNaN(parseInt(newVal))) { localStorage.setItem(`water_btn_${num}`, parseInt(newVal)); loadData(); } }, 500); }
         function wEnd(num) { clearTimeout(wTimer); if(!wFired) { let amount = num === 1 ? parseInt(localStorage.getItem('water_btn_1')||250) : parseInt(localStorage.getItem('water_btn_2')||500); addWaterUnits(amount, 0); } }
-        function calcWaterGoal() { let wStr = document.getElementById('input-weight').value.replace(',', '.'); let w = parseFloat(wStr); if(!isNaN(w) && w > 0) { document.getElementById('input-water-goal').value = Math.ceil((w * 50) / 100) * 100; } }
+        function calcWaterGoal() { let wStr = document.getElementById('input-weight').value.replace(',', '.'); let w = parseFloat(wStr); if(!isNaN(w) && w > 0) { document.getElementById('input-water-goal').value = Math.ceil((w * 50) / 100) * 100; localStorage.setItem('user_weight', w); } }
         
         function addIntraShaker() { 
             addWaterUnits(1000, 1500); 
@@ -449,12 +569,8 @@
         }
 
         function addWaterUnits(ml, naMg) {
-            let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || [];
-            log.push(ml);
-            localStorage.setItem(getKey('water_log'), JSON.stringify(log));
-            if(naMg > 0) {
-                localStorage.setItem(getKey('eaten_na'), (parseInt(localStorage.getItem(getKey('eaten_na'))) || 0) + naMg);
-            }
+            let log = JSON.parse(localStorage.getItem(getKey('water_log'))) || []; log.push(ml); localStorage.setItem(getKey('water_log'), JSON.stringify(log));
+            if(naMg > 0) { localStorage.setItem(getKey('eaten_na'), (parseInt(localStorage.getItem(getKey('eaten_na'))) || 0) + naMg); }
             loadData();
         }
 
@@ -559,7 +675,7 @@
         function formatTime(h, m) {
             if(m >= 60) { h++; m -= 60; } if(m < 0) { h--; m += 60; } if(h < 0) h += 24; if(h >= 24) h -= 24;
             if (m > 15 && m < 45) m = 30; else if (m >= 45) { m = 0; h++; if(h>=24) h=0; } else m = 0;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} Uhr`;
         }
 
         function generateMeals() {
@@ -609,7 +725,7 @@
             // Option A: PRE-WORKOUT SPEC
             if(isTrainingDay && workoutTimeStr) {
                 generatedOptions.push({
-                    title: `🔥 Pre-Workout Spec (Essen um ${preTimeStr} Uhr)`,
+                    title: `🔥 Pre-Workout Spec (Essen um ${preTimeStr})`,
                     items: [
                         { id: 'whey_dm', name: db.whey_dm.n, grams: 40 },
                         { id: 'maiswaffeln', name: db.maiswaffeln.n, grams: 60 },
@@ -618,21 +734,20 @@
                 });
                 
                 generatedOptions.push({
-                    title: `💪 Post-Workout Spec (Essen bis ${postTimeStr} Uhr)`,
+                    title: `💪 Post-Workout Spec (Essen bis ${postTimeStr})`,
                     items: [
-                        { id: 'putenhack', name: db.putenhack.n, grams: 200 },
+                        { id: 'putenhack', name: db.putenhack.n, grams: 150 },
                         { id: 'reis', name: db.reis.n, grams: 80 }
                     ]
                 });
             }
 
-            // OPTION 1: Herzhaft (Reis) - MAX CAPPINGS ANGEWENDET
+            // OPTION 1: Herzhaft (Reis) - MAX CAPPINGS
             let o1_g_gemuese = (mealCarb > 10 && mealPro > 5) ? 150 : 0; 
             let o1_c_left = Math.max(0, mealCarb - (o1_g_gemuese * db.tk_gemuese.c)); 
             let o1_g_reis = round(o1_c_left / db.reis.c, 5); 
             
             let o1_p_left = Math.max(0, mealPro - (o1_g_gemuese * db.tk_gemuese.p) - (o1_g_reis * db.reis.p)); 
-            // Putenhack Cap & Round (max 200g, schritte 50g)
             let raw_pute = o1_p_left / db.putenhack.p;
             let o1_g_pute = Math.min(200, Math.round(raw_pute / 50) * 50);
             
@@ -650,13 +765,10 @@
             }
             if(o1_items.length > 0) generatedOptions.push({ title: "Herzhaftes Menü (Reis)", items: o1_items });
 
-            // OPTION 3: Süß - MAX CAPPINGS ANGEWENDET
-            // Chia max 15g
+            // OPTION 3: Süß - MAX CAPPINGS
             let o2_g_chia = Math.min(15, round(Math.min(25, mealFat / db.chiasamen.f), 5)); 
-            // Oats max 100g
             let o2_c_left = Math.max(0, mealCarb - (o2_g_chia * db.chiasamen.c)); 
             let o2_g_oats = Math.min(100, round(o2_c_left / db.haferflocken.c, 5)); 
-            // Skyr max 300g
             let o2_p_left = Math.max(0, mealPro - (o2_g_chia * db.chiasamen.p) - (o2_g_oats * db.haferflocken.p)); 
             let o2_g_skyr = Math.min(300, round(o2_p_left / db.skyr.p, 10)); 
             
@@ -791,7 +903,6 @@
             let finalName = currentEditMeal.title + ": " + nameString;
             let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || [];
 
-            // FEHLER BEHOBEN: Hier wurde varFat = ... gesetzt. Ist nun korrigiert.
             if(editingHistoryIndex >= 0) {
                 let oldItem = history[editingHistoryIndex];
                 localStorage.setItem(getKey('eaten_kcal'), Math.max(0, currentEaten.kcal - oldItem.kcal + currentEditMeal.kcal));
@@ -814,7 +925,14 @@
         }
 
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; setTimeout(() => document.getElementById('settingsModal').style.opacity = '1', 10); }
-        function openEmojiSettings() { document.getElementById('sel-emoji-pro').value = emojis.pro; document.getElementById('sel-emoji-carb').value = emojis.carb; document.getElementById('sel-emoji-fat').value = emojis.fat; document.getElementById('expert-toggle').checked = isExpert; document.getElementById('emojiModal').style.display = 'flex'; setTimeout(() => document.getElementById('emojiModal').style.opacity = '1', 10); }
+        function openEmojiSettings() { 
+            document.getElementById('sel-emoji-pro').value = emojis.pro; 
+            document.getElementById('sel-emoji-carb').value = emojis.carb; 
+            document.getElementById('sel-emoji-fat').value = emojis.fat; 
+            document.getElementById('expert-toggle').checked = isExpert; 
+            document.getElementById('cycling-toggle').checked = useCycling; 
+            document.getElementById('emojiModal').style.display = 'flex'; setTimeout(() => document.getElementById('emojiModal').style.opacity = '1', 10); 
+        }
         function openMealBrain() { document.getElementById('mealModal').style.display = 'flex'; setTimeout(() => document.getElementById('mealModal').style.opacity = '1', 10); generateMeals(); }
         function closeModal(id) { const modal = document.getElementById(id); modal.style.opacity = '0'; setTimeout(() => modal.style.display = 'none', 200); }
         
