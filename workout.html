@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Workout Tracker</title>
+    <style>
+        :root {
+            --bg-color: #F2F2F7; --card-bg: #FFFFFF; --text-main: #000000; --text-muted: #8E8E93;
+            --accent: #007AFF; --electro: #34C759; --danger: #FF453A; --border-subtle: #E5E5EA;
+        }
+
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 16px; padding-bottom: 100px; -webkit-font-smoothing: antialiased; user-select: none; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 16px; }
+        h1 { font-size: 30px; font-weight: 700; margin: 0; letter-spacing: -0.5px; }
+
+        .card { background-color: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); }
+        .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;}
+        .ex-title { font-size: 16px; font-weight: 700; }
+        .ex-subtitle { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 4px; }
+        .reorder-btns { display: flex; gap: 8px; }
+        .btn-order { background: rgba(116,116,128,0.08); border: none; border-radius: 6px; padding: 4px 8px; color: var(--text-main); font-weight: bold; cursor: pointer; }
+
+        .smart-reco { background: rgba(52,199,89,0.1); color: var(--electro); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+        .set-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+        .set-num { width: 50px; color: var(--text-muted); }
+        .set-inputs { display: flex; gap: 6px; align-items: center; }
+        .set-inputs input { width: 55px; padding: 6px; text-align: center; border: 1px solid var(--border-subtle); border-radius: 6px; font-size: 15px; font-weight: 700; background: rgba(116,116,128,0.04); appearance: none; -webkit-appearance: none; }
+        
+        .live-prog { width: 55px; text-align: right; font-size: 12px; font-weight: 700; }
+        .prog-up { color: var(--electro); }
+        .prog-down { color: var(--danger); }
+        .prog-neutral { color: var(--text-muted); }
+
+        .btn-cardio { background-color: var(--accent); color: white; font-size: 16px; font-weight: 600; width: 100%; padding: 14px; border: none; border-radius: 12px; cursor: pointer; margin-top: 20px; }
+        .btn-cardio.done { background-color: var(--electro); }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 9999; }
+        .nav-item { flex: 1; text-align: center; padding: 10px 0; color: var(--text-muted); font-size: 11px; font-weight: 600; text-decoration: none; display:flex; flex-direction:column; align-items:center; }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 22px; margin-bottom: 3px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1>Training</h1>
+            <div id="workout-day-title" style="font-size: 14px; color: var(--text-muted); font-weight: 600; margin-top: 4px;">Lade Plan...</div>
+        </div>
+    </div>
+
+    <div id="workout-container"></div>
+
+    <button id="btn-cardio" class="btn-cardio" onclick="toggleCardio()">+ 10-15 Min Zone 2 Stairmaster</button>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><span class="nav-icon">🍎</span>Ernährung</a>
+        <a href="workout.html" class="nav-item active"><span class="nav-icon">🏋️‍♂️</span>Training</a>
+    </nav>
+
+    <script>
+        // Deine maßgeschneiderte Datenbank
+        const splits = {
+            ok: [
+                {id: 'ok1', n: 'Seitheben am Kabelturm', s: 3, r: '15'},
+                {id: 'ok2', n: 'Latzug breit', s: 2, r: '10'},
+                {id: 'ok3', n: 'Latzug eng', s: 2, r: '10'},
+                {id: 'ok4', n: 'Multi Schrägbankdrücken', s: 3, r: '10'},
+                {id: 'ok5', n: 'Überzüge eng', s: 2, r: '15'},
+                {id: 'ok6', n: 'Shrugs Schrägbank KH', s: 2, r: '12'},
+                {id: 'ok7', n: 'Butterfly Maschine', s: 3, r: '10'},
+                {id: 'ok8', n: 'Überkopfstrecken Seil', s: 2, r: '15'}
+            ],
+            uk: [
+                {id: 'uk1', n: 'Beinbeuger liegend', s: 3, r: '10'},
+                {id: 'uk2', n: 'RDL', s: 3, r: '6'},
+                {id: 'uk3', n: 'Adduktor', s: 3, r: '10'},
+                {id: 'uk4', n: 'Beinstrecker', s: 2, r: '10'},
+                {id: 'uk5', n: 'Hack Squat eng', s: 3, r: '8'}
+            ],
+            arme: [
+                {id: 'ar1', n: 'Seitheben am Kabelzug', s: 3, r: '15'},
+                {id: 'ar2', n: 'Reverse Butterfly Maschine', s: 3, r: '15'},
+                {id: 'ar3', n: 'Preacher Curl einarmig', s: 3, r: '10-15'},
+                {id: 'ar4', n: 'Überkopfstrecken Seil', s: 2, r: '15'},
+                {id: 'ar5', n: 'Kickbacks einarmig Kabel', s: 2, r: '12'}
+            ]
+        };
+
+        // UK Historie einspeisen (Deine Vorgaben)
+        if(!localStorage.getItem('ex_hist_uk1')) {
+            localStorage.setItem('ex_hist_uk1', JSON.stringify([{w:52.3, r:11}, {w:45, r:10}, {w:41, r:12}]));
+            localStorage.setItem('ex_hist_uk2', JSON.stringify([{w:150, r:5}, {w:140, r:6}, {w:130, r:8}]));
+            localStorage.setItem('ex_hist_uk3', JSON.stringify([{w:90, r:11}, {w:90, r:9}, {w:82.1, r:12}]));
+            localStorage.setItem('ex_hist_uk4', JSON.stringify([{w:111.4, r:11}, {w:98.4, r:12}]));
+            localStorage.setItem('ex_hist_uk5', JSON.stringify([{w:62.5, r:8}, {w:60, r:8}, {w:60, r:8}]));
+        }
+
+        let d = new Date(); let ds = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`;
+        let workoutType = localStorage.getItem(`workout_type_${ds}`);
+        
+        let currentExercises = [];
+
+        function init() {
+            if(!workoutType || workoutType === "none") {
+                document.getElementById('workout-container').innerHTML = `<div class="card" style="text-align:center; padding: 40px 20px; color: var(--text-muted);">Im Ernährungs-Tab wurde für heute kein Krafttraining ausgewählt.</div>`;
+                document.getElementById('btn-cardio').style.display = 'none';
+                return;
+            }
+
+            const typeMap = { 'ok': 'Oberkörper (OK)', 'uk': 'Unterkörper (UK)', 'arme': 'Arme' };
+            document.getElementById('workout-day-title').innerText = `Geplanter Split: ${typeMap[workoutType]}`;
+
+            // Eigene Reihenfolge laden oder Standard
+            let savedOrder = localStorage.getItem(`order_${workoutType}`);
+            currentExercises = savedOrder ? JSON.parse(savedOrder) : JSON.parse(JSON.stringify(splits[workoutType]));
+
+            renderWorkout();
+            checkCardio();
+        }
+
+        function renderWorkout() {
+            let html = "";
+            currentExercises.forEach((ex, idx) => {
+                let history = JSON.parse(localStorage.getItem(`ex_hist_${ex.id}`)) || [];
+                let recoHtml = "";
+
+                // Smarte Progression: Wenn im ersten Satz das Rep-Ziel letztes Mal erreicht wurde -> Gewichtssteigerung empfehlen
+                if(history.length > 0) {
+                    let lastSet1 = history[0];
+                    let targetReps = parseInt(ex.r.split('-')[0]); // Nimmt die erste Zahl bei "10-15"
+                    if(lastSet1.r >= targetReps) {
+                        recoHtml = `<div class="smart-reco"><span>💡</span> Smarte Empfehlung: Erhöhe auf ${parseFloat((lastSet1.w + 2.5).toFixed(1))}kg</div>`;
+                    }
+                }
+
+                let setsHtml = "";
+                for(let s = 0; s < ex.s; s++) {
+                    let pastSet = history[s];
+                    let pastText = pastSet ? `${pastSet.w}kg x ${pastSet.r}` : `Neu`;
+                    let pastVol = pastSet ? pastSet.w * pastSet.r : 0;
+
+                    let savedVal = JSON.parse(localStorage.getItem(`log_${ds}_${ex.id}_${s}`)) || {w: '', r: ''};
+
+                    setsHtml += `
+                        <div class="set-row">
+                            <div class="set-num">Satz ${s+1}<br><span style="font-size:10px; color:var(--text-muted); font-weight:500;">Letztes: ${pastText}</span></div>
+                            <div class="set-inputs">
+                                <input type="number" id="w_${ex.id}_${s}" placeholder="kg" value="${savedVal.w}" oninput="calcProg('${ex.id}', ${s}, ${pastVol})">
+                                <input type="number" id="r_${ex.id}_${s}" placeholder="Wdh" value="${savedVal.r}" oninput="calcProg('${ex.id}', ${s}, ${pastVol})">
+                            </div>
+                            <div class="live-prog" id="prog_${ex.id}_${s}">--</div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                <div class="card">
+                    <div class="ex-header">
+                        <div>
+                            <div class="ex-title">${ex.n}</div>
+                            <div class="ex-subtitle">Ziel: ${ex.s} Sätze x ${ex.r} Wdh</div>
+                        </div>
+                        <div class="reorder-btns">
+                            ${idx > 0 ? `<button class="btn-order" onclick="moveUp(${idx})">▲</button>` : ''}
+                            ${idx < currentExercises.length - 1 ? `<button class="btn-order" onclick="moveDown(${idx})">▼</button>` : ''}
+                        </div>
+                    </div>
+                    ${recoHtml}
+                    ${setsHtml}
+                    <button class="btn-save" style="margin-top: 10px; padding: 10px; font-size: 14px;" onclick="saveExercise('${ex.id}', ${ex.s})">Sätze Speichern</button>
+                </div>`;
+            });
+            document.getElementById('workout-container').innerHTML = html;
+
+            // Progresse sofort nach dem Render berechnen (falls schon Daten vom selben Tag drin stehen)
+            currentExercises.forEach(ex => {
+                let history = JSON.parse(localStorage.getItem(`ex_hist_${ex.id}`)) || [];
+                for(let s = 0; s < ex.s; s++) {
+                    let pastVol = history[s] ? history[s].w * history[s].r : 0;
+                    calcProg(ex.id, s, pastVol);
+                }
+            });
+        }
+
+        function calcProg(id, s, pastVol) {
+            let w = parseFloat(document.getElementById(`w_${id}_${s}`).value);
+            let r = parseInt(document.getElementById(`r_${id}_${s}`).value);
+            let el = document.getElementById(`prog_${id}_${s}`);
+
+            if(isNaN(w) || isNaN(r)) { el.innerHTML = "--"; el.className = "live-prog prog-neutral"; return; }
+            if(pastVol === 0) { el.innerHTML = "NEU"; el.className = "live-prog prog-up"; return; }
+
+            let curVol = w * r;
+            let diff = ((curVol - pastVol) / pastVol) * 100;
+
+            if(diff > 0) { el.innerHTML = `+${diff.toFixed(1)}%`; el.className = "live-prog prog-up"; }
+            else if(diff < 0) { el.innerHTML = `${diff.toFixed(1)}%`; el.className = "live-prog prog-down"; }
+            else { el.innerHTML = `±0%`; el.className = "live-prog prog-neutral"; }
+        }
+
+        function saveExercise(id, totalSets) {
+            let currentSession = [];
+            for(let s = 0; s < totalSets; s++) {
+                let w = parseFloat(document.getElementById(`w_${id}_${s}`).value);
+                let r = parseInt(document.getElementById(`r_${id}_${s}`).value);
+                if(!isNaN(w) && !isNaN(r)) {
+                    currentSession.push({w: w, r: r});
+                    localStorage.setItem(`log_${ds}_${id}_${s}`, JSON.stringify({w: w, r: r}));
+                }
+            }
+            // Überschreibe Historie für das NÄCHSTE Training, wenn mindestens 1 Satz gespeichert wurde
+            if(currentSession.length > 0) {
+                localStorage.setItem(`ex_hist_${id}`, JSON.stringify(currentSession));
+            }
+            // Visuelles Feedback
+            let btn = event.target;
+            let oldText = btn.innerText;
+            btn.innerText = "✓ Gespeichert";
+            btn.style.backgroundColor = "var(--electro)";
+            setTimeout(() => { btn.innerText = oldText; btn.style.backgroundColor = "var(--accent)"; }, 1500);
+        }
+
+        function moveUp(idx) {
+            if(idx === 0) return;
+            let temp = currentExercises[idx-1]; currentExercises[idx-1] = currentExercises[idx]; currentExercises[idx] = temp;
+            localStorage.setItem(`order_${workoutType}`, JSON.stringify(currentExercises)); renderWorkout();
+        }
+
+        function moveDown(idx) {
+            if(idx === currentExercises.length - 1) return;
+            let temp = currentExercises[idx+1]; currentExercises[idx+1] = currentExercises[idx]; currentExercises[idx] = temp;
+            localStorage.setItem(`order_${workoutType}`, JSON.stringify(currentExercises)); renderWorkout();
+        }
+
+        function toggleCardio() {
+            let isDone = localStorage.getItem(`cardio_${ds}`) === 'true';
+            localStorage.setItem(`cardio_${ds}`, !isDone);
+            checkCardio();
+        }
+
+        function checkCardio() {
+            let btn = document.getElementById('btn-cardio');
+            if(localStorage.getItem(`cardio_${ds}`) === 'true') {
+                btn.classList.add('done'); btn.innerHTML = "✓ Stairmaster erledigt";
+            } else {
+                btn.classList.remove('done'); btn.innerHTML = "+ 10-15 Min Zone 2 Stairmaster";
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
