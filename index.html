@@ -93,7 +93,7 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 24px; border-radius: 4px; background: #ffffff; border: 1px solid var(--border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; margin-top: -8px; }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: pointer; background: var(--border-subtle); border-radius: 2px; }
 
-        .btn-save { background-color: var(--accent); color: white; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; border: none; border-radius: 10px; margin-top: 8px; }
+        .btn-save { background-color: var(--accent); color: white; font-size: 15px; font-weight: 600; width: 100%; padding: 12px; border: none; border-radius: 10px; margin-top: 8px; cursor: pointer; }
         .btn-cancel { background: none; color: var(--text-muted); font-size: 15px; width: 100%; padding: 10px; border: none; margin-top: 4px; cursor: pointer;}
 
         .history-item-container { position: relative; margin-bottom: 10px; border-radius: 12px; overflow: hidden; background: var(--danger); }
@@ -201,8 +201,8 @@
                 <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Wasser 💧</div>
             </div>
             <div style="display:flex; gap: 6px;">
-                <button class="btn-water" id="btn-w1" ontouchstart="wStart(1)" ontouchend="wEnd(1)">+250</button>
-                <button class="btn-water" id="btn-w2" ontouchstart="wStart(2)" ontouchend="wEnd(2)">+500</button>
+                <button class="btn-water" id="btn-w1" onclick="handleWaterClick(1)">+250</button>
+                <button class="btn-water" id="btn-w2" onclick="handleWaterClick(2)">+500</button>
                 <button class="btn-water" style="background:rgba(90,200,250,0.1); color:var(--accent);" onclick="addIntraShaker()">+ Intra 🧂</button>
             </div>
         </div>
@@ -347,7 +347,7 @@
         let editingHistoryIndex = -1; 
         
         let isExpert = localStorage.getItem('expert_mode') === 'true';
-        let useCycling = localStorage.getItem('carb_cycling') !== 'false';
+        let useCycling = localStorage.getItem('carb_cycling') === 'true';
         let activePreset = localStorage.getItem('active_preset') || "low";
         let emojis = { 
             pro: localStorage.getItem('emoji_pro') || '🥩', 
@@ -376,23 +376,13 @@
         };
 
         function getFirstIdForCat(cat) { 
-            for (let id in db) { 
-                if (db[id].cat === cat) return id; 
-            } 
+            for (let id in db) { if (db[id].cat === cat) return id; } 
             return null; 
         }
 
-        function round(val, step) { 
-            return Math.max(0, Math.round(val / step) * step); 
-        }
-
-        function getKey(base) { 
-            return `${base}_${currentDateStr}`; 
-        }
-
-        function formatDiff(val) { 
-            return val < 0 ? `<span style="color: var(--danger); font-weight: 700;">${val}</span>` : val; 
-        }
+        function round(val, step) { return Math.max(0, Math.round(val / step) * step); }
+        function getKey(base) { return `${base}_${currentDateStr}`; }
+        function formatDiff(val) { return val < 0 ? `<span style="color: var(--danger); font-weight: 700;">${val}</span>` : val; }
 
         function toggleExpertMode() { 
             isExpert = document.getElementById('expert-toggle').checked; 
@@ -404,11 +394,7 @@
             useCycling = document.getElementById('cycling-toggle').checked; 
             localStorage.setItem('carb_cycling', useCycling); 
             applyExpertUI(); 
-            if(!useCycling) { 
-                selectPreset('standard'); 
-            } else { 
-                selectPreset('low'); 
-            }
+            if(!useCycling) { selectPreset('standard'); } else { selectPreset('low'); }
         }
 
         function applyExpertUI() { 
@@ -478,7 +464,7 @@
             localStorage.setItem('user_tdee', tdee);
             localStorage.setItem('user_weight', weight);
 
-            let p = activePreset;
+            let p = useCycling ? activePreset : "standard";
             let targetKcal = tdee;
             if(p === 'low') targetKcal = tdee - 150;
             if(p === 'high') targetKcal = tdee + 150;
@@ -503,11 +489,7 @@
             let na = Math.round((waterMl / 1000) * 1300 / 50) * 50; 
             let ka = Math.round((na * 1.15) / 50) * 50;
             document.getElementById('input-goal-na').value = na; 
-            document.getElementById('slider-goal-na').value = na;
-            document.getElementById('input-goal-ka').value = ka; 
-            document.getElementById('slider-goal-ka').value = ka;
-            sync('na', 'input'); 
-            sync('ka', 'input');
+            document.getElementById('input-goal-ka').value = ka;
         }
 
         function updateDateDisplay() {
@@ -529,7 +511,9 @@
                 activePreset = localStorage.getItem('active_preset') || "low"; 
                 if(activePreset === "standard") activePreset = "low"; 
                 document.querySelectorAll('.preset-tab').forEach(el => el.classList.remove('active')); 
-                document.getElementById(`tab-${activePreset}`).classList.add('active'); 
+                if(document.getElementById(`tab-${activePreset}`)) {
+                    document.getElementById(`tab-${activePreset}`).classList.add('active'); 
+                }
             } else { 
                 activePreset = "standard"; 
             }
@@ -551,27 +535,10 @@
             updateDateDisplay(); 
         }
 
-        // --- Water Logic ---
-        let wTimer, wFired = false;
-        function wStart(num) { 
-            wFired = false; 
-            wTimer = setTimeout(() => { 
-                wFired = true; 
-                let current = num === 1 ? (localStorage.getItem('water_btn_1') || 250) : (localStorage.getItem('water_btn_2') || 500); 
-                let newVal = prompt(`Menge (ml):`, current); 
-                if(newVal && !isNaN(parseInt(newVal))) { 
-                    localStorage.setItem(`water_btn_${num}`, parseInt(newVal)); 
-                    loadData(); 
-                } 
-            }, 500); 
-        }
-
-        function wEnd(num) { 
-            clearTimeout(wTimer); 
-            if(!wFired) { 
-                let amount = num === 1 ? parseInt(localStorage.getItem('water_btn_1')||250) : parseInt(localStorage.getItem('water_btn_2')||500); 
-                addWaterUnits(amount, 0); 
-            } 
+        // --- Stabilisierte Wasser-Logik über regulären Click ---
+        function handleWaterClick(num) {
+            let amount = num === 1 ? parseInt(localStorage.getItem('water_btn_1') || 250) : parseInt(localStorage.getItem('water_btn_2') || 500); 
+            addWaterUnits(amount, 0);
         }
 
         function calcWaterGoal() { 
@@ -629,10 +596,10 @@
         function loadData() {
             let p = useCycling ? activePreset : "standard";
             
-            let defKcal = profiles[p] ? profiles[p].kcal : 2500;
+            let defKcal = profiles[p] ? profiles[p].kcal : 2600;
             let defPro = profiles[p] ? profiles[p].pro : 180;
-            let defCarb = profiles[p] ? profiles[p].carb : 230;
-            let defFat = profiles[p] ? profiles[p].fat : 85;
+            let defCarb = profiles[p] ? profiles[p].carb : 300;
+            let defFat = profiles[p] ? profiles[p].fat : 75;
             let defNa = profiles[p] ? profiles[p].na : 4500;
             let defKa = profiles[p] ? profiles[p].ka : 5000;
 
@@ -691,17 +658,12 @@
             document.getElementById('input-goal-kcal').value = goals.kcal;
             document.getElementById('input-goal-pro').value = goals.pro; 
             document.getElementById('slider-goal-pro').value = goals.pro;
-            
             document.getElementById('input-goal-carb').value = goals.carb; 
-            
             document.getElementById('input-goal-fat').value = goals.fat; 
             document.getElementById('slider-goal-fat').value = goals.fat;
             
             document.getElementById('input-goal-na').value = goals.na; 
-            document.getElementById('slider-goal-na').value = goals.na;
-            
-            document.getElementById('input-goal-ka').value = goals.ka; 
-            document.getElementById('slider-goal-ka').value = goals.ka;
+            document.getElementById('input-goal-ka').value = goals.ka;
 
             loadHistory();
         }
@@ -714,9 +676,7 @@
             swipingIndex = index; 
             isScrolling = false; 
             pressTimer = setTimeout(() => { 
-                if(!isScrolling && Math.abs(currentX - startX) < 15) {
-                    editHistoryItem(index); 
-                }
+                if(!isScrolling && Math.abs(currentX - startX) < 15) { editHistoryItem(index); }
             }, 500); 
         }
 
@@ -724,10 +684,7 @@
             if(swipingIndex !== index) return; 
             currentX = e.touches[0].clientX; 
             let diffX = currentX - startX; 
-            if(Math.abs(diffX) > 15) { 
-                clearTimeout(pressTimer); 
-                isScrolling = true; 
-            } 
+            if(Math.abs(diffX) > 15) { clearTimeout(pressTimer); isScrolling = true; } 
             if(diffX < 0 && Math.abs(diffX) > 20) { 
                 let el = document.getElementById(`hist-card-${index}`); 
                 el.style.transform = `translateX(${Math.max(-85, diffX)}px)`; 
@@ -769,15 +726,12 @@
             const inputEl = document.getElementById(`input-goal-${macro}`); 
             const sliderEl = document.getElementById(`slider-goal-${macro}`);
             if(sliderEl) { 
-                if (source === 'slider') { 
-                    inputEl.value = sliderEl.value; 
-                } else { 
-                    sliderEl.value = inputEl.value; 
-                } 
+                if (source === 'slider') { inputEl.value = sliderEl.value; } else { sliderEl.value = inputEl.value; } 
             }
             liveSyncKcalOverride(document.getElementById('input-goal-kcal').value);
         }
 
+        // --- Reparierter Speicher-Prozess für die Makros & Carb-Cycling ---
         function saveGoals() { 
             let p = useCycling ? activePreset : "standard";
             localStorage.setItem(`${p}_goal_kcal`, document.getElementById('input-goal-kcal').value); 
@@ -791,11 +745,8 @@
         }
 
         function formatTime(h, m) { 
-            if(m >= 60) { h++; m -= 60; } 
-            if(m < 0) { h--; m += 60; } 
-            if(m > 15 && m < 45) m = 30; 
-            else if (m >= 45) { m = 0; h++; } 
-            else m = 0; 
+            if(m >= 60) { h++; m -= 60; } if(m < 0) { h--; m += 60; } 
+            if(m > 15 && m < 45) m = 30; else if (m >= 45) { m = 0; h++; } else m = 0; 
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} Uhr`; 
         }
 
@@ -828,10 +779,10 @@
         function generateMeals() {
             let p = useCycling ? activePreset : "standard";
             
-            let defKcal = profiles[p] ? profiles[p].kcal : 2500;
+            let defKcal = profiles[p] ? profiles[p].kcal : 2600;
             let defPro = profiles[p] ? profiles[p].pro : 180;
-            let defCarb = profiles[p] ? profiles[p].carb : 230;
-            let defFat = profiles[p] ? profiles[p].fat : 85;
+            let defCarb = profiles[p] ? profiles[p].carb : 300;
+            let defFat = profiles[p] ? profiles[p].fat : 75;
             let defNa = profiles[p] ? profiles[p].na : 4500;
             let defKa = profiles[p] ? profiles[p].ka : 5000;
 
@@ -857,9 +808,7 @@
             if (remKcal <= 50) {
                 if (isExpert && remNa > 300) {
                     let saltGrams = Math.round(remNa / db.salz.na);
-                    if (saltGrams > 0) {
-                        generatedOptions.push({ title: "Elektrolyt-Ausgleich", items: [{ id: 'salz', name: db.salz.n, grams: saltGrams }] });
-                    }
+                    if (saltGrams > 0) { generatedOptions.push({ title: "Elektrolyt-Ausgleich", items: [{ id: 'salz', name: db.salz.n, grams: saltGrams }] }); }
                     container.innerHTML = renderOptions(generatedOptions, goals);
                 } else { 
                     container.innerHTML = `<div style="color:var(--electro); font-weight:bold; text-align:center; padding:20px;">Ziele erfüllt! 💪</div>`; 
@@ -869,41 +818,28 @@
 
             let isTrainingDay = (localStorage.getItem(getKey('workout_type')) || "none") !== "none"; 
             let workoutTimeStr = localStorage.getItem(getKey('workout_time')) || "";
-            let preTimeStr = ""; 
-            let postTimeStr = "";
+            let preTimeStr = ""; let postTimeStr = "";
             
             if (isTrainingDay && workoutTimeStr) {
                 let parts = workoutTimeStr.split(':');
                 if(parts.length === 2) { 
-                    let h = parseInt(parts[0]); 
-                    let m = parseInt(parts[1]); 
-                    preTimeStr = formatTime(h - 1, m - 30); 
-                    postTimeStr = formatTime(h + 2, m); 
+                    let h = parseInt(parts[0]); let m = parseInt(parts[1]); 
+                    preTimeStr = formatTime(h - 1, m - 30); postTimeStr = formatTime(h + 2, m); 
                 }
             }
 
             let targetKcal = Math.min(remKcal, 750); 
             let factor = targetKcal / ((remPro * 4) + (remCarb * 4) + (remFat * 9));
-            let mealPro = remPro * factor; 
-            let mealCarb = remCarb * factor; 
-            let mealFat = remFat * factor; 
-            let mealNa = remNa * factor;
+            let mealPro = remPro * factor; let mealCarb = remCarb * factor; let mealFat = remFat * factor; let mealNa = remNa * factor;
 
             if(isTrainingDay && workoutTimeStr) {
                 generatedOptions.push({ 
                     title: `🔥 Pre-Workout Spec (${preTimeStr})`, 
-                    items: [
-                        { id: 'whey_dm', name: db.whey_dm.n, grams: 40 }, 
-                        { id: 'maiswaffeln', name: db.maiswaffeln.n, grams: 60 }, 
-                        { id: 'salz', name: "Salz", grams: 3 }
-                    ] 
+                    items: [{ id: 'whey_dm', name: db.whey_dm.n, grams: 40 }, { id: 'maiswaffeln', name: db.maiswaffeln.n, grams: 60 }, { id: 'salz', name: "Salz", grams: 3 }] 
                 });
                 generatedOptions.push({ 
                     title: `💪 Post-Workout Spec (${postTimeStr})`, 
-                    items: [
-                        { id: 'putenhack', name: db.putenhack.n, grams: 150 }, 
-                        { id: 'reis', name: db.reis.n, grams: 80 }
-                    ] 
+                    items: [{ id: 'putenhack', name: db.putenhack.n, grams: 150 }, { id: 'reis', name: db.reis.n, grams: 80 }] 
                 });
             }
 
@@ -949,12 +885,8 @@
             return options.map((opt, index) => {
                 let pPro=0, pCarb=0, pFat=0, pKcal=0, pNa=0, pKa=0; 
                 opt.items.forEach(i => { 
-                    pPro += i.grams * db[i.id].p; 
-                    pCarb += i.grams * db[i.id].c; 
-                    pFat += i.grams * db[i.id].f; 
-                    pKcal += i.grams * db[i.id].k; 
-                    pNa += i.grams * db[i.id].na; 
-                    pKa += i.grams * db[i.id].ka; 
+                    pPro += i.grams * db[i.id].p; pCarb += i.grams * db[i.id].c; pFat += i.grams * db[i.id].f; 
+                    pKcal += i.grams * db[i.id].k; pNa += i.grams * db[i.id].na; pKa += i.grams * db[i.id].ka; 
                 });
                 
                 let aKcal = Math.round(goals.kcal - currentEaten.kcal - pKcal); 
@@ -983,7 +915,6 @@
                             <span>${emojis.pro} ${formatDiff(aPro)}g</span>
                             <span>${emojis.carb} ${formatDiff(aCarb)}g</span>
                             <span>${emojis.fat} ${formatDiff(aFat)}g</span>
-                            ${isExpert ? `<span>🧂 ${formatDiff(aNa)}mg</span>`:''}
                         </div>
                     </div>
                     <button class="btn-eat-option" onclick="openNewEditMeal(${index})">Anpassen & Essen</button>
@@ -1005,10 +936,7 @@
         function editHistoryItem(index) { 
             let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || []; 
             let item = history[index]; 
-            if(!item.items) { 
-                alert("Nicht bearbeitbar."); 
-                return; 
-            } 
+            if(!item.items) { alert("Nicht bearbeitbar."); return; } 
             editingHistoryIndex = index; 
             currentEditMeal = JSON.parse(JSON.stringify(item)); 
             document.getElementById('edit-meal-title').innerText = currentEditMeal.title || "Mahlzeit anpassen"; 
@@ -1021,9 +949,7 @@
         function getOptionsForCategory(category, selectedId) {
             let options = '';
             for (let key in db) { 
-                if (db[key].cat === category) { 
-                    options += `<option value="${key}" ${key === selectedId ? 'selected' : ''}>${db[key].n}</option>`; 
-                } 
+                if (db[key].cat === category) { options += `<option value="${key}" ${key === selectedId ? 'selected' : ''}>${db[key].n}</option>`; } 
             }
             return options;
         }
@@ -1088,62 +1014,40 @@
             let totalPro = 0, totalCarb = 0, totalFat = 0, totalKcal = 0, totalNa = 0, totalKa = 0;
             currentEditMeal.items.forEach(item => { 
                 let food = db[item.id]; 
-                totalPro += item.grams * food.p; 
-                totalCarb += item.grams * food.c; 
-                totalFat += item.grams * food.f; 
-                totalKcal += item.grams * food.k; 
-                totalNa += item.grams * food.na; 
-                totalKa += item.grams * food.ka; 
+                totalPro += item.grams * food.p; totalCarb += item.grams * food.c; totalFat += item.grams * food.f; 
+                totalKcal += item.grams * food.k; totalNa += item.grams * food.na; totalKa += item.grams * food.ka; 
             });
             
-            currentEditMeal.pro = Math.round(totalPro); 
-            currentEditMeal.carb = Math.round(totalCarb); 
-            currentEditMeal.fat = Math.round(totalFat); 
-            currentEditMeal.kcal = Math.round(totalKcal); 
-            currentEditMeal.na = Math.round(totalNa); 
-            currentEditMeal.ka = Math.round(totalKa);
+            currentEditMeal.pro = Math.round(totalPro); currentEditMeal.carb = Math.round(totalCarb); 
+            currentEditMeal.fat = Math.round(totalFat); currentEditMeal.kcal = Math.round(totalKcal); 
+            currentEditMeal.na = Math.round(totalNa); currentEditMeal.ka = Math.round(totalKa);
             
             let p = useCycling ? activePreset : "standard";
             
-            let defKcal = profiles[p] ? profiles[p].kcal : 2500;
+            let defKcal = profiles[p] ? profiles[p].kcal : 2600;
             let defPro = profiles[p] ? profiles[p].pro : 180;
-            let defCarb = profiles[p] ? profiles[p].carb : 230;
-            let defFat = profiles[p] ? profiles[p].fat : 85;
-            let defNa = profiles[p] ? profiles[p].na : 4500;
-            let defKa = profiles[p] ? profiles[p].ka : 5000;
+            let defCarb = profiles[p] ? profiles[p].carb : 300;
+            let defFat = profiles[p] ? profiles[p].fat : 75;
 
             const goals = { 
                 kcal: parseInt(localStorage.getItem(`${p}_goal_kcal`)) || defKcal, 
                 pro: parseInt(localStorage.getItem(`${p}_goal_pro`)) || defPro, 
                 carb: parseInt(localStorage.getItem(`${p}_goal_carb`)) || defCarb, 
-                fat: parseInt(localStorage.getItem(`${p}_goal_fat`)) || defFat, 
-                na: parseInt(localStorage.getItem(`${p}_goal_na`)) || defNa, 
-                ka: parseInt(localStorage.getItem(`${p}_goal_ka`)) || defKa 
+                fat: parseInt(localStorage.getItem(`${p}_goal_fat`)) || defFat 
             };
             
-            let bKcal = currentEaten.kcal; 
-            let bPro = currentEaten.pro; 
-            let bCarb = currentEaten.carb; 
-            let bFat = currentEaten.fat; 
-            let bNa = currentEaten.na; 
-            let bKa = currentEaten.ka;
+            let bKcal = currentEaten.kcal; let bPro = currentEaten.pro; let bCarb = currentEaten.carb; let bFat = currentEaten.fat; 
             
             if (editingHistoryIndex >= 0) { 
                 let oldItem = JSON.parse(localStorage.getItem(getKey('food_history')))[editingHistoryIndex]; 
-                bKcal = Math.max(0, bKcal - oldItem.kcal); 
-                bPro = Math.max(0, bPro - oldItem.pro); 
-                bCarb = Math.max(0, bCarb - oldItem.carb); 
-                bFat = Math.max(0, bFat - oldItem.fat); 
-                bNa = Math.max(0, bNa - (oldItem.na||0)); 
-                bKa = Math.max(0, bKa - (oldItem.ka||0)); 
+                bKcal = Math.max(0, bKcal - oldItem.kcal); bPro = Math.max(0, bPro - oldItem.pro); 
+                bCarb = Math.max(0, bCarb - oldItem.carb); bFat = Math.max(0, bFat - oldItem.fat); 
             }
             
             let aKcal = goals.kcal - bKcal - currentEditMeal.kcal; 
             let aPro = goals.pro - bPro - currentEditMeal.pro; 
             let aCarb = goals.carb - bCarb - currentEditMeal.carb; 
             let aFat = goals.fat - bFat - currentEditMeal.fat; 
-            let aNa = goals.na - bNa - currentEditMeal.na; 
-            let aKa = goals.ka - bKa - currentEditMeal.ka;
 
             document.getElementById('edit-meal-macros').innerHTML = `
                 🔥 <b>${currentEditMeal.kcal} kcal</b> <br>
@@ -1163,10 +1067,7 @@
 
         function saveEditedMeal() {
             let validItems = currentEditMeal.items.filter(i => i.grams > 0); 
-            if(validItems.length === 0) { 
-                closeModal('editModal'); 
-                return; 
-            }
+            if(validItems.length === 0) { closeModal('editModal'); return; }
             let nameString = validItems.map(i => `${i.grams}g ${i.name}`).join(" + "); 
             let finalName = currentEditMeal.title + ": " + nameString;
             let history = JSON.parse(localStorage.getItem(getKey('food_history'))) || [];
